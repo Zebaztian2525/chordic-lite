@@ -1,6 +1,6 @@
 # 🎵 Chordic Lite
 
-**[▶ Test directly in the browser](https://zebaztian2525.github.io/chordic-lite/chordic-lite.html)** — no installation required.
+**[▶ Test directly in the browser](https://zebaztian2525.github.io/chordic-lite.html)** — no installation required.
 
 A lightweight, browser-based chord editor for songwriters, church musicians,
 and anyone who wants to place chords exactly where they belong — right above
@@ -39,7 +39,7 @@ Just open the HTML file and start typing.
 
 ## Getting started
 
-**Quickest:** open [livedemon](https://zebaztian2525.github.io/chordic-lite/chordic-lite.html) in Chrome, Edge or Firefox. Clear.
+**Quickest:** open [livedemon](https://zebaztian2525.github.io/chordic-lite.html) in Chrome, Edge or Firefox. Clear.
 
 **Local:** download `chordic-lite.html` and open it in any modern browser.
 
@@ -50,3 +50,17 @@ serving over HTTPS. If you run the file locally, you can start a simple server:
 ```bash
 python3 -m http.server 8000
 # then open http://localhost:8000/chordic-lite.html
+
+## About the project
+
+Chordic Lite is a small, browser-based chord software for songwriters
+and church musician. You enter the lyrics and place chords above
+exactly the letter where the chord should change — even several chords above the same one
+words, and in the spaces between words.
+
+**Test live:** https://zebaztian2525.github.io/chordic-lite/chordic-lite.html
+
+Everything runs locally in the browser. No server, no account, no one
+installation. The file is a single HTML file and can be opened directly from disk.
+
+Feedback and contributions are most welcome!
