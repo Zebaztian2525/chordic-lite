@@ -39,13 +39,14 @@ Just open the HTML file and start typing.
 
 ## Getting started
 
-1. Download `chordic-lite.html`.
-2. Open it in a modern browser. That's it.
+**Quickest:** open [livedemon](https://zebaztian2525.github.io/chordic-lite/chordic-lite.html) in Chrome, Edge or Firefox. Clear.
 
-If you want to use the folder library (Chrome / Edge only):
+**Local:** download `chordic-lite.html` and open it in any modern browser.
+
+If you want to use the folder library (Chrome/Edge), the page needs to be run over
+HTTPS or `localhost`. The live demo works instantly, because GitHub Pages
+serving over HTTPS. If you run the file locally, you can start a simple server:
 
 ```bash
-# from the folder containing chordic-lite.html
 python3 -m http.server 8000
 # then open http://localhost:8000/chordic-lite.html
-```
