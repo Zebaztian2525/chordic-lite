@@ -31,11 +31,14 @@ forka repot och översätta — det uppskattas.*
 - **Transponera** hela låten upp eller ner ett halvt steg i taget.
   Både ackordsymbolerna och den valda tonarten flyttas med.
 - **Spara och ladda** låtar som `.chordic.json`-filer.
-  - I Chrome/Edge (via `localhost` eller HTTPS) kan du peka ut en mapp
-    en gång och få ett riktigt bibliotek — låtar sparas och laddas direkt
-    från disken.
-  - I Firefox/Safari (eller om filen öppnas direkt från disk) faller
-    Chordic Lite tillbaka på nedladdning och filuppladdning.
+  - I Chrome, Edge, Vivaldi, Brave, Opera och andra Chromium-baserade
+    webbläsare kan du peka ut en mapp en gång och få ett riktigt
+    bibliotek — låtar sparas och laddas direkt från disken. Detta
+    fungerar oftast även när du öppnar filen direkt från datorn
+    (`file://`).
+  - I Firefox och Safari krävs att sidan körs över HTTPS eller
+    `localhost` för mappbiblioteket. Där faller Chordic Lite istället
+    tillbaka på nedladdning och filuppladdning.
 - **Skriv ut till PDF** — gränssnittet göms automatiskt i utskriftsmallen.
 - **Sparar automatiskt** aktuell låt i `localStorage`, så inget tappas
   vid en omladdning.
@@ -45,19 +48,20 @@ forka repot och översätta — det uppskattas.*
 ## Komma igång
 
 **Snabbast:** öppna [livedemon](https://zebaztian2525.github.io/chordic-lite/)
-i Chrome, Edge eller Firefox.
+i valfri modern webbläsare.
 
 **Lokalt:** ladda ner `index.html` (eller `chordic-lite.html`) och öppna
-den i valfri modern webbläsare.
-
-Mappbiblioteket (endast Chrome/Edge) kräver en säker kontext. Livedemon
-fungerar direkt eftersom GitHub Pages serverar över HTTPS. Kör du filen
-lokalt kan du starta en enkel server:
+den genom att dubbelklicka på filen. I Chromium-baserade webbläsare
+fungerar mappbiblioteket direkt även då. I Firefox och Safari behöver du
+starta en enkel lokal server om du vill använda mappbiblioteket:
 
 ```bash
 python3 -m http.server 8000
 # öppna sedan http://localhost:8000/index.html
 ```
+
+Nedladdning och filuppladdning fungerar i alla webbläsare oavsett hur
+sidan öppnas.
 
 ---
 
@@ -93,12 +97,16 @@ Vill du hjälpa till med något av detta? Öppna en issue eller en PR.
 
 ## Webbläsarstöd
 
-| Funktion | Chrome | Edge | Firefox | Safari |
-|---|---|---|---|---|
-| Grundläggande redigering | ✅ | ✅ | ✅ | ✅ |
-| Mappbibliotek (File System Access API) | ✅ | ✅ | — | — |
-| Ladda ner / ladda upp filer | ✅ | ✅ | ✅ | ✅ |
-| Skriv ut till PDF | ✅ | ✅ | ✅ | ✅ |
+| Funktion | Chromium* | Firefox | Safari |
+|---|---|---|---|
+| Grundläggande redigering | ✅ | ✅ | ✅ |
+| Mappbibliotek via `file://` | ✅ | — | — |
+| Mappbibliotek via HTTPS / localhost | ✅ | — | — |
+| Ladda ner / ladda upp filer | ✅ | ✅ | ✅ |
+| Skriv ut till PDF | ✅ | ✅ | ✅ |
+
+\* Chromium omfattar Chrome, Edge, Vivaldi, Brave, Opera, Deepin Browser
+och andra webbläsare som bygger på samma motor.
 
 ---
 
