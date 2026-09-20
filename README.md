@@ -57,3 +57,63 @@ lokalt kan du starta en enkel server:
 ```bash
 python3 -m http.server 8000
 # öppna sedan http://localhost:8000/index.html
+Så använder du programmet
+Åtgärd	Hur
+Markera en bokstav	Klicka på den
+Lägg till ett ackord	Dra en chip till en bokstav, eller markera en bokstav och klicka på ett ackord
+Lägg till ett eget ackord	Bygg det i byggarpanelen, dra eller tryck "Lägg till"
+Flytta ett ackord	Dra det till en ny bokstav
+Ta bort ett ackord	Ctrl-klicka (⌘-klicka på macOS)
+Byt tonart	Klicka på en pianotangent
+Transponera	Använd −½ / +½
+Redigera texten	Klicka "✏️ Text"
+Skriv ut / PDF	Klicka "🖨️ PDF"
+Spara fil	Använd bibliotekspanelen eller "⬇ Ladda ner"
+Idéer för framtiden
+□ Ångra / gör om
+□ Vers- / refräng- / brygga-markeringar med upprepning
+□ Import och export av ChordPro-format
+□ Flera ackordrader per textrad (tvåstämmigt)
+□ Anpassad ackordpalett per låt
+□ Tangentbordsnavigering (piltangenter för markering, Tab mellan ackord)
+Vill du hjälpa till med något av detta? Öppna en issue eller en PR.
+
+Webbläsarstöd
+Funktion	Chrome	Edge	Firefox	Safari
+Grundläggande redigering	✅	✅	✅	✅
+Mappbibliotek (File System Access API)	✅	✅	—	—
+Ladda ner / ladda upp filer	✅	✅	✅	✅
+Skriv ut till PDF	✅	✅	✅	✅
+Teknik
+En enda HTML-fil. Inget byggsteg, inga beroenden, inget ramverk.
+Ren HTML, CSS och vanlig JavaScript.
+
+Modellen för ackord och tecken är medvetet enkel:
+
+js
+state = {
+  title:  "Min låt",
+  lyrics: "Amazing grace how sweet the sound\n…",
+  chords: [ { line: 0, char: 4, chord: "G" }, … ],
+  key:    "C"
+}
+chords är en platt lista av { line, char, chord } — ett ackord per
+position. char räknar tecken inom raden, inklusive mellanslag, så ett
+ackord som placerats "mellan två ord" har helt enkelt mellanslagets
+index.
+
+Licens
+MIT — se LICENSE.
+
+Om projektet
+Chordic Lite är ett litet, webbläsarbaserat ackordprogram för låtskrivare
+och kyrkomusiker. Du skriver in låttexten och placerar ackord ovanför
+exakt den bokstav där ackordet ska byta — även flera ackord över samma
+ord, och i mellanrummen mellan ord.
+
+Testa live: https://zebaztian2525.github.io/chordic-lite/
+
+Allt körs lokalt i webbläsaren. Ingen server, inget konto, ingen
+installation. Filen är en enda HTML-fil och kan öppnas direkt från disk.
+
+Feedback och bidrag är varmt välkomna!
