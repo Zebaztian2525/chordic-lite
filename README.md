@@ -1,54 +1,59 @@
 # 🎵 Chordic Lite
 
-**[▶ Try it live in your browser](https://zebaztian2525.github.io/chordic-lite/)** — no installation required.
+**[▶ Testa direkt i webbläsaren](https://zebaztian2525.github.io/chordic-lite/)** — ingen installation krävs.
 
-A lightweight, browser-based chord editor for songwriters, church musicians,
-and anyone who wants to place chords exactly where they belong — right above
-the syllable that carries the beat.
+Ett litet, webbläsarbaserat ackordprogram för låtskrivare, kyrkomusiker och
+alla som vill placera ackord exakt där de hör hemma — rakt ovanför den
+stavelse som bär betoningen.
 
-Chordic Lite runs entirely in your browser. No server, no install, no account.
-Just open it and start typing.
+Chordic Lite körs helt och hållet i webbläsaren. Ingen server, ingen
+installation, inget konto. Öppna bara filen och börja skriva.
 
-> **Status:** early prototype. Feedback and pull requests are very welcome.
+> **Status:** tidig prototyp. Feedback och pull requests är varmt välkomna.
 
----
-
-## Features
-
-- **Write lyrics, place chords above individual letters.** Every character in
-  the lyric is a drop target, so you can put three chords over "Amazing" —
-  one for each stressed vowel — or drop a chord in the gap between two words.
-- **Drag-and-drop chords** from a palette of diatonic chords in the current key.
-- **Build custom chords** — root note, quality (m, 7, maj7, sus4, dim…),
-  and slash bass note. Drag the result onto a letter, or click a letter and
-  press "Lägg till".
-- **Piano keyboard** for choosing key. The palette updates to the diatonic
-  chords of that key automatically.
-- **Transpose** the entire song up or down one semitone at a time.
-  Chord symbols *and* the selected key move together.
-- **Save and load** songs as `.chordic.json` files.
-  - In Chrome/Edge (served over `localhost` or HTTPS) you can pick a folder
-    once and get a proper library — songs save and load directly from disk.
-  - In Firefox/Safari (or when opening the file from disk), Chordic Lite
-    falls back to downloading and uploading individual files.
-- **Print to PDF** — the UI is hidden automatically in the print stylesheet.
-- **Autosaves** your current song to `localStorage` so nothing is lost on
-  a refresh.
+*Programmet är på svenska. Den som vill ha en engelsk version får gärna
+forka repot och översätta — det uppskattas.*
 
 ---
 
-## Getting started
+## Funktioner
 
-**Quickest:** open the [live demo](https://zebaztian2525.github.io/chordic-lite/)
-in Chrome, Edge, or Firefox.
+- **Skriv låttext och placera ackord ovanför enskilda bokstäver.** Varje
+  tecken i texten är en egen drop-zon, så du kan sätta tre ackord över
+  "Amazing" — ett för varje betonad vokal — eller lägga ett ackord i
+  mellanrummet mellan två ord.
+- **Dra och släpp-ackord** från en palett med diatoniska ackord i vald tonart.
+- **Bygg egna ackord** — grundton, typ (m, 7, maj7, sus4, dim…) och
+  basnot. Dra resultatet till en bokstav, eller markera en bokstav och
+  tryck "Lägg till".
+- **Pianoklaviatur** för att välja tonart. Paletten uppdateras automatiskt
+  till skalans ackord.
+- **Transponera** hela låten upp eller ner ett halvt steg i taget.
+  Både ackordsymbolerna och den valda tonarten flyttas med.
+- **Spara och ladda** låtar som `.chordic.json`-filer.
+  - I Chrome/Edge (via `localhost` eller HTTPS) kan du peka ut en mapp
+    en gång och få ett riktigt bibliotek — låtar sparas och laddas direkt
+    från disken.
+  - I Firefox/Safari (eller om filen öppnas direkt från disk) faller
+    Chordic Lite tillbaka på nedladdning och filuppladdning.
+- **Skriv ut till PDF** — gränssnittet göms automatiskt i utskriftsmallen.
+- **Sparar automatiskt** aktuell låt i `localStorage`, så inget tappas
+  vid en omladdning.
 
-**Locally:** download `index.html` (or `chordic-lite.html`) and open it in any
-modern browser.
+---
 
-The folder library (Chrome/Edge only) requires a secure context. The live demo
-works out of the box because GitHub Pages serves over HTTPS. If you run the
-file locally, start a simple server:
+## Komma igång
+
+**Snabbast:** öppna [livedemon](https://zebaztian2525.github.io/chordic-lite/)
+i Chrome, Edge eller Firefox.
+
+**Lokalt:** ladda ner `index.html` (eller `chordic-lite.html`) och öppna
+den i valfri modern webbläsare.
+
+Mappbiblioteket (endast Chrome/Edge) kräver en säker kontext. Livedemon
+fungerar direkt eftersom GitHub Pages serverar över HTTPS. Kör du filen
+lokalt kan du starta en enkel server:
 
 ```bash
 python3 -m http.server 8000
-# then open http://localhost:8000/index.html
+# öppna sedan http://localhost:8000/index.html
