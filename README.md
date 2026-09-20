@@ -1,5 +1,7 @@
 # 🎵 Chordic Lite
 
+**[▶ Test directly in the browser](https://zebaztian2525.github.io/chordic-lite/chordic-lite.html)** — no installation required.
+
 A lightweight, browser-based chord editor for songwriters, church musicians,
 and anyone who wants to place chords exactly where they belong — right above
 the syllable that carries the beat.
