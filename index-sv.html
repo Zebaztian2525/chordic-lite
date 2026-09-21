@@ -42,6 +42,18 @@
     .toolbar button:hover { background: #a8d5dd; transform: translateY(-1px); }
     .toolbar button:active { transform: translateY(0); }
 
+    .lang-switch {
+        display: flex; gap: 4px; align-items: center;
+        font-size: 0.8rem; font-weight: bold;
+    }
+    .lang-switch a, .lang-switch span {
+        padding: 5px 12px; border-radius: 20px;
+        text-decoration: none; color: #0d3f4c;
+    }
+    .lang-switch a { background: #d3e9ed; }
+    .lang-switch a:hover { background: #a8d5dd; }
+    .lang-switch .active { background: #1a5f6e; color: #fff; }
+
     .layout {
         display: grid;
         grid-template-columns: 340px minmax(0, 1fr) 500px;
@@ -391,6 +403,10 @@
         <button id="printBtn">🖨️ PDF</button>
         <button id="clearChordsBtn">🗑 Rensa ackord</button>
     </div>
+    <div class="lang-switch">
+        <a href="index.html" title="English version">🇬🇧 EN</a>
+        <span class="active">🇸🇪 SV</span>
+    </div>
 </div>
 
 <div class="layout">
@@ -494,7 +510,7 @@
 (function() {
     'use strict';
 
-    const STORAGE_KEY = 'chordic_lite_v5';
+    const STORAGE_KEY = 'chordic_lite_sv_v5';
     const NOTES_SHARP = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
     const MAJOR_INTERVALS = [0, 2, 4, 5, 7, 9, 11];
     const CHORD_QUALITIES = ['', 'm', 'm', '', '', 'm', 'dim'];
@@ -1172,7 +1188,6 @@
         output += '{key: ' + state.key + '}\n';
         output += '\n';
 
-        // Intro som en egen rad med ackord
         if (Array.isArray(state.intro) && state.intro.length > 0) {
             output += state.intro.map(c => '[' + c + ']').join('') + '\n';
             output += '\n';
@@ -1218,11 +1233,6 @@
         showToast('ChordPro-fil nedladdad');
     }
 
-    // === ChordPro import ===
-    // 1. Parsa varje rad till { text, chords }
-    // 2. Slå ihop intilliggande ackord-rader (utan lyrik)
-    // 3. Extrahera inledande ackord-rader som "intro"
-    // 4. Resten blir låttext
     function importChordPro(text, fileName) {
         text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
         const lines = text.split('\n');
@@ -1271,7 +1281,6 @@
             parsedLines.push({ text: lyricText, chords: chordsOnLine });
         }
 
-        // Slå ihop intilliggande ackord-rader
         const mergedLines = [];
         let idx = 0;
         while (idx < parsedLines.length) {
@@ -1302,7 +1311,6 @@
             }
         }
 
-        // Extrahera inledande ackord-rader (tomma eller ackord-only) som intro
         const introChords = [];
         let firstLyricIdx = 0;
         for (let i = 0; i < mergedLines.length; i++) {
@@ -1315,7 +1323,6 @@
             }
         }
 
-        // Resten blir låttext
         const lyricLines = mergedLines.slice(firstLyricIdx);
         const lyricsLines = lyricLines.map(l => l.text);
         const chords = [];
