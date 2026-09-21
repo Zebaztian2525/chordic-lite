@@ -64,46 +64,79 @@ python3 -m http.server 8000
 Downloading and uploading files works in every browser, no matter how the
 page is opened.
 
-How to use
-Action	How
-Select a letter	Click it
-Add a chord	Drag a chip onto a letter, or select a letter and click a chord
-Add a custom chord	Build it in the builder panel, then drag or press "Add"
-Move a chord	Drag it to a new letter
-Remove a chord	Ctrl-click (⌘-click on macOS) it
-Change key	Click a piano key
-Transpose	Use −½ / +½
-Edit lyrics	Type in the text area on the right
-Import ChordPro	Click "📥 ChordPro"
-Export ChordPro	Click "📤 ChordPro"
-Print / PDF	Click "🖨️ PDF"
-Save file	Use the library panel or "⬇ Download"
-Switch to Swedish	Click "🇸🇪 SV" in the top right
-Roadmap / ideas
-□ Undo / redo
-□ Verse / chorus / bridge markers with repeat
-□ Multiple chord rows per line (two-voice arrangements)
-□ Custom chord palette per song
-□ Keyboard navigation (arrow keys to move selection, Tab between chords)
+------
+
+## How to use
+
+| Action             | How                                                          |
+| :----------------- | :----------------------------------------------------------- |
+| Select a letter    | Click it                                                     |
+| Add a chord        | Drag a chip onto a letter, or select a letter and click a chord |
+| Add a custom chord | Build it in the builder panel, then drag or press "Add"      |
+| Move a chord       | Drag it to a new letter                                      |
+| Remove a chord     | `Ctrl`-click (`⌘`-click on macOS) it                         |
+| Change key         | Click a piano key                                            |
+| Transpose          | Use `−½` / `+½`                                              |
+| Edit lyrics        | Type in the text area on the right                           |
+| Import ChordPro    | Click "📥 ChordPro"                                           |
+| Export ChordPro    | Click "📤 ChordPro"                                           |
+| Print / PDF        | Click "🖨️ PDF"                                                |
+| Save file          | Use the library panel or "⬇ Download"                        |
+| Switch to Swedish  | Click "🇸🇪 SV" in the top right                               |
+
+------
+
+## Roadmap / ideas
+
+- □ 
+
+  Undo / redo
+
+- □ 
+
+  Verse / chorus / bridge markers with repeat
+
+- □ 
+
+  Multiple chord rows per line (two-voice arrangements)
+
+- □ 
+
+  Custom chord palette per song
+
+- □ 
+
+  Keyboard navigation (arrow keys to move selection, Tab between chords)
+
 If you'd like to help with any of these, open an issue or a PR.
 
-Browser support
-Feature	Chromium*	Firefox	Safari
-Core editing	✅	✅	✅
-Folder library via file://	✅	—	—
-Folder library via HTTPS / localhost	✅	—	—
-Download / upload files	✅	✅	✅
-Print to PDF	✅	✅	✅
-* Chromium covers Chrome, Edge, Vivaldi, Brave, Opera, Deepin Browser, and
+------
+
+## Browser support
+
+| Feature                              | Chromium* | Firefox | Safari |
+| :----------------------------------- | :-------- | :------ | :----- |
+| Core editing                         | ✅         | ✅       | ✅      |
+| Folder library via `file://`         | ✅         | —       | —      |
+| Folder library via HTTPS / localhost | ✅         | —       | —      |
+| Download / upload files              | ✅         | ✅       | ✅      |
+| Print to PDF                         | ✅         | ✅       | ✅      |
+
+\* Chromium covers Chrome, Edge, Vivaldi, Brave, Opera, Deepin Browser, and
 other browsers built on the same engine.
 
-Tech
+------
+
+## Tech
+
 Single HTML file. No build step, no dependencies, no framework.
 Plain HTML, CSS, and vanilla JavaScript.
 
 The chord/character model is intentionally simple:
 
 js
+
+```
 state = {
   title:  "My song",
   artist: "Bob Dylan",
@@ -112,19 +145,26 @@ state = {
   chords: [ { line: 0, char: 4, chord: "G" }, … ],
   key:    "C"
 }
-chords is a flat list of { line, char, chord } — one chord per position.
-The char index counts characters within a line, including spaces, so a
+```
+
+
+
+`chords` is a flat list of `{ line, char, chord }` — one chord per position.
+The `char` index counts characters within a line, including spaces, so a
 chord placed "between two words" simply has the index of the space character.
-intro holds the leading chord sequence (e.g. a riff or count-in) shown in
+`intro` holds the leading chord sequence (e.g. a riff or count-in) shown in
 the song header rather than in the lyrics.
 
-When you edit the lyrics, applyLyrics() runs a prefix/suffix diff between
+When you edit the lyrics, `applyLyrics()` runs a prefix/suffix diff between
 the old and new text and re-maps every chord position. Chords before the edit
 stay put, chords after the edit shift by the length of the change, and chords
 inside the changed region are dropped.
 
-License
-MIT — see LICENSE.
+------
+
+## License
+
+MIT — see [LICENSE](https://license/).
 
 <details> <summary><strong>🇸🇪 Om projektet (svenska)</strong></summary>
 Chordic Lite är ett litet, webbläsarbaserat ackordprogram för låtskrivare
