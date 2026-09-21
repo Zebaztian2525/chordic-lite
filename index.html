@@ -3,250 +3,475 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chordic Lite - Chordastic Style</title>
+    <title>Chordic Lite - Visuell Chord Editor</title>
     <style>
         :root {
-            --primary-color: #20B2AA; /* LightSeaGreen - liknar Chordastic */
-            --bg-color: #f4f4f9;
+            --primary-color: #00b894; /* Turkos/Grön som du gillade */
+            --bg-color: #f0f2f5;
+            --paper-color: #ffffff;
             --text-color: #333;
-            --border-color: #ccc;
-            --chord-color: #d32f2f; /* Röd för ackord för tydlighet */
-            --a4-width: 210mm;
-            --a4-height: 297mm;
+            --chord-color: #d63031; /* Röd för ackord för tydlighet */
+            --border-color: #dfe6e9;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
             background-color: var(--bg-color);
-            color: var(--text-color);
-            height: 100vh;
+            margin: 0;
             display: flex;
-            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            color: var(--text-color);
         }
 
-        header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 1rem;
+        /* Vänster sida: Förhandsvisning (A4-stil) */
+        .preview-pane {
+            flex: 2;
+            padding: 40px;
+            overflow-y: auto;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .sheet-paper {
+            background: var(--paper-color);
+            width: 100%;
+            max-width: 800px; /* A4 liknande bredd */
+            min-height: 1000px;
+            padding: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .song-title {
             text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-size: 2em;
+            margin-bottom: 30px;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+
+        /* Radstruktur för text och ackord */
+        .lyric-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end; /* Ackord och text baslinje */
+            margin-bottom: 25px; /* Utrymme mellan rader */
+            line-height: 1.5;
+            position: relative;
+            min-height: 40px;
+        }
+
+        .lyric-word-container {
+            position: relative;
+            margin-right: 4px; /* Utrymme mellan ord */
+            display: inline-block;
+        }
+
+        .chord-display {
+            position: absolute;
+            top: -20px; /* Placera ovanför texten */
+            left: 0;
+            color: var(--chord-color);
+            font-weight: bold;
+            font-size: 0.9em;
+            white-space: nowrap;
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        .chord-display:hover {
+            background-color: #ffeaa7;
+        }
+
+        .lyric-text {
+            font-size: 1.1em;
+            padding-top: 20px; /* Utrymme för ackordet ovanför */
+        }
+
+        /* Tomt utrymme för ackord efter sista ordet */
+        .end-of-line-chord-zone {
+            flex-grow: 1;
+            position: relative;
+            min-width: 50px;
+            height: 40px;
+            cursor: text;
+        }
+        
+        .end-of-line-chord {
+            position: absolute;
+            top: -20px;
+            left: 0;
+            color: var(--chord-color);
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Höger sida: Redigerare */
+        .editor-pane {
+            flex: 1;
+            background: #fff;
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.05);
+            min-width: 350px;
+        }
+
+        .editor-header {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--primary-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        h1 { margin: 0; font-size: 1.5rem; }
+        textarea#input-editor {
+            flex: 1;
+            width: 100%;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 15px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            resize: none;
+            outline: none;
+            background-color: #fafafa;
+        }
 
-        .toolbar {
+        textarea#input-editor:focus {
+            border-color: var(--primary-color);
+            background-color: #fff;
+        }
+
+        .controls {
+            margin-top: 20px;
             display: flex;
             gap: 10px;
+            flex-wrap: wrap;
         }
 
         button {
-            background-color: white;
-            color: var(--primary-color);
+            padding: 10px 15px;
             border: none;
-            padding: 8px 15px;
             border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
             transition: background 0.2s;
-        }
-
-        button:hover {
-            background-color: #e0f7fa;
-        }
-
-        .main-container {
-            display: flex;
             flex: 1;
-            overflow: hidden; /* Förhindrar scroll på hela kroppen */
         }
 
-        /* Vänster panel: A4-visning */
-        .preview-pane {
-            flex: 2;
-            padding: 20px;
-            overflow-y: auto;
-            background-color: #555; /* Mörk bakgrund för att framhäva pappret */
-            display: flex;
-            justify-content: center;
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
         }
+        .btn-primary:hover { background-color: #00a383; }
 
-        .a4-page {
-            background: white;
-            width: var(--a4-width);
-            min-height: var(--a4-height);
-            padding: 20mm;
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
-            box-sizing: border-box;
-            font-family: 'Courier New', Courier, monospace; /* Monospace för att hålla kollonner */
-            font-size: 14pt;
-            line-height: 1.6;
-            white-space: pre-wrap; /* Behåller mellanrum och rader */
-            position: relative;
+        .btn-secondary {
+            background-color: #dfe6e9;
+            color: #2d3436;
         }
+        .btn-secondary:hover { background-color: #b2bec3; }
 
-        .chord {
-            color: var(--chord-color);
-            font-weight: bold;
-            cursor: pointer;
-            padding: 0 2px;
-        }
-
-        .chord:hover {
-            text-decoration: underline;
-        }
-
-        /* Höger panel: Editor */
-        .editor-pane {
-            flex: 1;
-            background-color: white;
-            border-left: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            min-width: 300px;
-        }
-
-        .editor-header {
-            padding: 10px;
-            background-color: #eee;
-            border-bottom: 1px solid var(--border-color);
-            font-weight: bold;
-        }
-
-        textarea {
-            flex: 1;
-            width: 100%;
-            border: none;
-            padding: 15px;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 14pt;
-            line-height: 1.6;
-            resize: none;
-            outline: none;
-            box-sizing: border-box;
-        }
-
-        /* Dold filinput */
-        #fileInput { display: none; }
-
-        /* Instruktionsruta */
         .instructions {
-            font-size: 0.8rem;
-            color: #666;
+            font-size: 0.85em;
+            color: #636e72;
+            margin-top: 15px;
+            background: #f1f2f6;
             padding: 10px;
-            background: #fff3cd;
-            border-bottom: 1px solid #ffeeba;
+            border-radius: 4px;
         }
+
+        /* Hidden file input */
+        #file-input { display: none; }
+
     </style>
 </head>
 <body>
 
-<header>
-    <h1>Chordic Lite</h1>
-    <div class="toolbar">
-        <button onclick="exportChordPro()">📤 Exportera ChordPro</button>
-        <button onclick="document.getElementById('fileInput').click()">📥 Importera ChordPro</button>
-        <input type="file" id="fileInput" accept=".txt,.pro,.crd" onchange="importChordPro(this)">
-        <button onclick="clearAll()">🗑️ Rensa</button>
-    </div>
-</header>
-
-<div class="main-container">
-    <!-- Vänster: Visning (A4) -->
+    <!-- Vänster: Visuell vy (Som Chordastic) -->
     <div class="preview-pane">
-        <div id="preview" class="a4-page"></div>
-    </div>
-
-    <!-- Höger: Redigering (Alltid synlig) -->
-    <div class="editor-pane">
-        <div class="editor-header">Redigera Text & Ackord</div>
-        <div class="instructions">
-            Skriv text. Sätt ackord inom hakparenteser, t.ex: <br>
-            <code>[Am]Hej [Dm]där [G]du</code><br>
-            Ackord efter sista bokstaven funkar också: <code>Hej där[Am][G]</code>
+        <div class="sheet-paper" id="score-area">
+            <div class="song-title" contenteditable="true" id="song-title">Sångtitel</div>
+            <div id="lyrics-container">
+                <!-- Här genereras rader dynamiskt -->
+            </div>
+            <div style="margin-top: 20px; color: #ccc; text-align: center; font-style: italic;">
+                Klicka på texten i höger panel för att redigera.<br>
+                Klicka på ett tomt utrymme i slutet av en rad för att lägga till ackord.
+            </div>
         </div>
-        <textarea id="editor" placeholder="Skriv dina låttexter här..." oninput="updatePreview()"></textarea>
     </div>
-</div>
 
-<script>
-    const editor = document.getElementById('editor');
-    const preview = document.getElementById('preview');
-
-    // Uppdaterar vyn baserat på editorns innehåll
-    function updatePreview() {
-        const text = editor.value;
-        // Regex hittar allt inom [] och gör det till en span-tagga för styling
-        // Vi använder 'g' för global (alla förekomster)
-        const formattedText = text.replace(/\[(.*?)\]/g, '<span class="chord">$1</span>');
-        preview.innerHTML = formattedText;
-    }
-
-    // Exportera till ChordPro-fil
-    function exportChordPro() {
-        const text = editor.value;
-        if (!text.trim()) {
-            alert("Ingen text att exportera!");
-            return;
-        }
-
-        const blob = new Blob([text], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'låttext.chopro'; // Standardändelse för ChordPro
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }
-
-    // Importera från ChordPro-fil
-    function importChordPro(inputElement) {
-        const file = inputElement.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
+    <!-- Höger: Redigerare (Alltid synlig) -->
+    <div class="editor-pane">
+        <div class="editor-header">
+            <span>Redigera Text & Ackord</span>
+        </div>
         
-        reader.onload = function(e) {
-            const content = e.target.result;
-            // Sätt in innehållet direkt i editorn
-            editor.value = content;
-            // Uppdatera vyn direkt
-            updatePreview();
-            
-            // Återställ input så samma fil kan väljas igen om nödvändigt
-            inputElement.value = ''; 
-        };
+        <textarea id="input-editor" placeholder="Skriv din text här...
+För att lägga till ackord, skriv dem inom hakparenteser precis innan stavelsen de ska bytas på.
 
-        reader.onerror = function() {
-            alert("Ett fel uppstod vid läsning av filen.");
-        };
+Exempel:
+[Am]Hej [Dm]där hur [G]må[r]r du?
+C[Am]lart det går bra."></textarea>
 
-        // Läs filen som text
-        reader.readAsText(file);
-    }
+        <div class="instructions">
+            <strong>Så här funkar det:</strong><br>
+            1. Skriv text i rutan till höger.<br>
+            2. Lägg till ackord genom att skriva <code>[Am]</code> direkt före texten.<br>
+            3. För ackord i slutet av en mening, lägg dem efter sista bokstaven.<br>
+            4. Använd knapparna nedan för att spara eller hämta ChordPro-filer.
+        </div>
 
-    function clearAll() {
-        if(confirm("Vill du rensa allt?")) {
-            editor.value = '';
-            updatePreview();
+        <div class="controls">
+            <button class="btn-primary" onclick="triggerImport()">📥 Importera ChordPro</button>
+            <button class="btn-secondary" onclick="exportChordPro()">📤 Exportera ChordPro</button>
+            <button class="btn-secondary" onclick="clearAll()">Rensa allt</button>
+        </div>
+        <input type="file" id="file-input" accept=".txt,.pro,.crd,.chordpro" onchange="handleFileSelect(event)">
+    </div>
+
+    <script>
+        const editor = document.getElementById('input-editor');
+        const container = document.getElementById('lyrics-container');
+        const titleInput = document.getElementById('song-title');
+        let isUpdatingFromEditor = false;
+
+        // Lyssna på ändringar i editorn
+        editor.addEventListener('input', () => {
+            if (!isUpdatingFromEditor) {
+                renderScore();
+            }
+        });
+
+        // Initiera med exempeltext om tom
+        if (!editor.value.trim()) {
+            editor.value = "[Am]Hej [Dm]där, hur [G]må[r]r du?\n[Em]Detta är en [Am]test av F[G]unk[C]tionen.\n[Am]Ackord i slutet av meningen[Dm]   [G]";
+            renderScore();
         }
-    }
 
-    // Initiera med en exempeltext om tom
-    window.onload = function() {
-        const example = "[C]Hej på dig\n[Dm]Detta är en test[G]rad[C]\nOch en rad utan ackord i slutet[Am][G]";
-        // Vi sätter inte exemplet automatiskt så användaren ser sin egen data först, 
-        // men om du vill ha det kvar vid refresh kan du aktivera nedan:
-        // editor.value = example;
-        // updatePreview();
-    };
-</script>
+        function renderScore() {
+            const rawText = editor.value;
+            const lines = rawText.split('\n');
+            container.innerHTML = '';
 
+            lines.forEach((line, index) => {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'lyric-row';
+                
+                // Regex för att hitta ackord [X] och text
+                // Vi delar upp strängen bit för bit
+                let currentPos = 0;
+                const chordRegex = /\[([^\]]+)\]/g;
+                let match;
+                let lastIndex = 0;
+                let hasContent = false;
+
+                // Om raden är tom, skapa en tom div för att behålla strukturen
+                if (line.trim() === '') {
+                    rowDiv.style.height = '20px';
+                    container.appendChild(rowDiv);
+                    return;
+                }
+
+                // Hitta alla ackord i raden
+                const matches = [];
+                while ((match = chordRegex.exec(line)) !== null) {
+                    matches.push({
+                        chord: match[1],
+                        index: match.index,
+                        length: match[0].length
+                    });
+                }
+
+                // Bygg upp raden
+                let textBuffer = "";
+                
+                // Om det finns text innan första ackordet
+                if (matches.length > 0 && matches[0].index > 0) {
+                    textBuffer = line.substring(0, matches[0].index);
+                    createWordElements(rowDiv, textBuffer, null);
+                    hasContent = true;
+                } else if (matches.length === 0) {
+                    // Inga ackord alls på raden
+                    createWordElements(rowDiv, line, null);
+                    hasContent = true;
+                }
+
+                for (let i = 0; i < matches.length; i++) {
+                    const m = matches[i];
+                    
+                    // Lägg till ackordet ovanför nästa ord/textbit
+                    // Texten mellan detta ackord och nästa (eller slutet)
+                    const startOfText = m.index + m.length;
+                    const endOfText = (i < matches.length - 1) ? matches[i+1].index : line.length;
+                    
+                    const textSegment = line.substring(startOfText, endOfText);
+                    
+                    if (textSegment.trim() === "" && i === matches.length - 1) {
+                        // ACKORD I SLUTET AV RADEN (Ingen text följer)
+                        const endZone = document.createElement('div');
+                        endZone.className = 'end-of-line-chord-zone';
+                        endZone.onclick = () => insertChordAtEnd(index);
+                        
+                        const chordSpan = document.createElement('span');
+                        chordSpan.className = 'end-of-line-chord';
+                        chordSpan.textContent = m.chord;
+                        chordSpan.title = "Klicka för att redigera i rutan till höger";
+                        endZone.appendChild(chordSpan);
+                        
+                        rowDiv.appendChild(endZone);
+                    } else {
+                        // Vanligt fall: Ackord följt av text
+                        // Om textSegment börjar med mellanslag, hantera det som separat ord eller ignorera?
+                        // Enklare approach: Skapa en container för ordet som följer
+                        createWordElements(rowDiv, textSegment, m.chord);
+                    }
+                    hasContent = true;
+                }
+
+                container.appendChild(rowDiv);
+            });
+        }
+
+        // Hjälpsfunktion för att skapa ord och koppla ackord
+        function createWordElements(parent, text, chordAbove) {
+            // Dela upp text i ord för bättre hantering, men behåll mellanslag i strukturen om möjligt
+            // För enkelhetens skull i denna version: vi renderar hela segmentet, men ackordet sitter på första tecknet
+            // För att det ska se snyggt ut som Chordastic bör vi dela på ord.
+            
+            const words = text.split(/(\s+)/); // Behåll mellanslag i arrayen
+            
+            let firstWordFound = false;
+
+            words.forEach(word => {
+                if (word.trim() === "") {
+                    // Mellanslag
+                    const space = document.createElement('span');
+                    space.textContent = word;
+                    parent.appendChild(space);
+                } else {
+                    // Ett riktigt ord
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'lyric-word-container';
+                    
+                    if (chordAbove && !firstWordFound) {
+                        const chordSpan = document.createElement('span');
+                        chordSpan.className = 'chord-display';
+                        chordSpan.textContent = chordAbove;
+                        // Klicka på ackordet flyttar fokus till editorn (enkel implementation)
+                        chordSpan.onclick = () => {
+                            editor.focus();
+                            // Här kunde man implementera smart scroll till rätt plats i editorn
+                        };
+                        wrapper.appendChild(chordSpan);
+                        firstWordFound = true; // Bara första ordet får ackordet i detta segment
+                    }
+
+                    const textSpan = document.createElement('span');
+                    textSpan.className = 'lyric-text';
+                    textSpan.textContent = word;
+                    wrapper.appendChild(textSpan);
+                    
+                    parent.appendChild(wrapper);
+                }
+            });
+        }
+
+        function insertChordAtEnd(lineIndex) {
+            const lines = editor.value.split('\n');
+            if (lines[lineIndex]) {
+                // Lägg till ett platshållar-ackord om det inte redan finns ett direkt vid slutet
+                // Detta är lite klurigt eftersom vi vill att användaren ska skriva själva.
+                // Enklare: Sätt fokus i editorn på den raden.
+                editor.focus();
+                alert("Tips: Gå till slutet av raden i rutan till höger och skriv t.ex. [G]");
+            }
+        }
+
+        // --- IMPORT / EXPORT LOGIK ---
+
+        function triggerImport() {
+            document.getElementById('file-input').click();
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                parseChordPro(content);
+            };
+            reader.readAsText(file);
+            // Reset input så samma fil kan väljas igen om nödvändigt
+            event.target.value = '';
+        }
+
+        function parseChordPro(content) {
+            // Konverterar ChordPro ([Am]Text) till vårt interna format för editorn
+            // ChordPro formatet ÄR egentligen redan vårt format ([Am]Text), 
+            // men vi måste städa upp metadata som {title: ...} eller {start_of_chorus}
+            
+            let cleanLines = [];
+            const lines = content.split(/\r?\n/);
+
+            lines.forEach(line => {
+                // Ignorera ChordPro direktiv som {t: Title} eller {s: Verse}
+                if (line.trim().startsWith('{') && line.trim().endsWith('}')) {
+                    const directive = line.trim().slice(1, -1).toLowerCase();
+                    if (directive.startsWith('title:') || directive.startsWith('t:')) {
+                        const title = line.split(':')[1].trim().replace('}', '');
+                        document.getElementById('song-title').textContent = title;
+                    }
+                    // Ignorera andra direktiv för enkelhets skull, eller behåll dem som kommentarer?
+                    // Vi ignorerar dem för att hålla vyn ren.
+                    return; 
+                }
+                
+                // Ta bort överflödiga mellanslag men behåll strukturen
+                cleanLines.push(line);
+            });
+
+            editor.value = cleanLines.join('\n');
+            renderScore();
+        }
+
+        function exportChordPro() {
+            let content = `{title: ${document.getElementById('song-title').textContent}}\n\n`;
+            content += editor.value;
+            
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = (document.getElementById('song-title').textContent || 'sang') + '.chopro';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function clearAll() {
+            if(confirm("Vill du verkligen radera allt?")) {
+                editor.value = "";
+                document.getElementById('song-title').textContent = "Sångtitel";
+                renderScore();
+            }
+        }
+
+        // Starta
+        renderScore();
+
+    </script>
 </body>
 </html>
