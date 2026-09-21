@@ -969,4 +969,392 @@
             return;
         }
         try {
-            libraryDirHandle = await
+            libraryDirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
+            currentLibraryFile = null;
+            await refreshLibraryList();
+            showToast('Mapp vald');
+        } catch (e) {
+            if (e.name !== 'AbortError') console.warn(e);
+        }
+    }
+
+    async function refreshLibraryList() {
+        libraryListEl.innerHTML = '';
+        if (!libraryDirHandle) {
+            libraryListEl.innerHTML = '<li class="empty">Ingen mapp vald</li>';
+            return;
+        }
+        const names = [];
+        for await (const entry of libraryDirHandle.values()) {
+            if (entry.kind === 'file' &&
+                (entry.name.endsWith('.chordic.json') || entry.name.endsWith('.pro'))) {
+                names.push(entry.name);
+            }
+        }
+        names.sort();
+        if (names.length === 0) {
+            libraryListEl.innerHTML = '<li class="empty">Inga låtar i mappen</li>';
+            return;
+        }
+        names.forEach(name => {
+            const li = document.createElement('li');
+            const display = name.replace(/\.(chordic\.json|pro)$/i, '');
+            li.textContent = display;
+            if (name === currentLibraryFile) li.classList.add('active');
+            li.addEventListener('click', () => loadFromLibrary(name));
+            libraryListEl.appendChild(li);
+        });
+    }
+
+    async function saveToLibrary() {
+        if (!fsSupported()) {
+            showToast('Mappval kräver Chromium-baserad webbläsare');
+            return;
+        }
+        if (!libraryDirHandle) {
+            await pickLibrary();
+            if (!libraryDirHandle) return;
+        }
+        const name = prompt('Filnamn:', state.title || 'Min låt');
+        if (!name) return;
+        const fileName = name.trim().replace(/[\\/:*?"<>|]/g, '_') + '.chordic.json';
+        try {
+            const handle = await libraryDirHandle.getFileHandle(fileName, { create: true });
+            const writable = await handle.createWritable();
+            await writable.write(JSON.stringify(serializeSong(), null, 2));
+            await writable.close();
+            currentLibraryFile = fileName;
+            state.title = name.trim();
+            songTitleInput.value = state.title;
+            save();
+            await refreshLibraryList();
+            showToast('Sparat: ' + fileName);
+        } catch (e) {
+            console.warn(e);
+            showToast('Kunde inte spara filen');
+        }
+    }
+
+    async function loadFromLibrary(fileName) {
+        if (!libraryDirHandle) return;
+        try {
+            const handle = await libraryDirHandle.getFileHandle(fileName);
+            const file = await handle.getFile();
+            const text = await file.text();
+            if (fileName.toLowerCase().endsWith('.pro')) {
+                importChordPro(text, fileName);
+            } else {
+                const data = JSON.parse(text);
+                applyLoadedSong(data);
+            }
+            currentLibraryFile = fileName;
+            await refreshLibraryList();
+            showToast('Öppnade: ' + fileName);
+        } catch (e) {
+            console.warn(e);
+            showToast('Kunde inte läsa filen');
+        }
+    }
+
+    function serializeSong() {
+        return {
+            format: 'chordic-lite',
+            version: 2,
+            title: state.title,
+            artist: state.artist,
+            key: state.key,
+            lyrics: state.lyrics,
+            chords: state.chords
+        };
+    }
+
+    function exportChordPro() {
+        let output = '';
+        if (state.title)  output += '{title: ' + state.title + '}\n';
+        if (state.artist) output += '{artist: ' + state.artist + '}\n';
+        output += '{key: ' + state.key + '}\n';
+        output += '\n';
+
+        const lines = state.lyrics.split('\n');
+        lines.forEach((lineText, lineIdx) => {
+            const chars = Array.from(lineText);
+            let resultLine = '';
+
+            for (let i = 0; i < chars.length; i++) {
+                const chord = state.chords.find(c =>
+                    c.line === lineIdx && c.char === i);
+                if (chord) resultLine += '[' + chord.chord + ']';
+                resultLine += chars[i];
+            }
+
+            const endChords = state.chords
+                .filter(c => c.line === lineIdx && c.char >= chars.length)
+                .sort((a, b) => a.char - b.char);
+            endChords.forEach(chord => {
+                resultLine += '[' + chord.chord + ']';
+            });
+
+            output += resultLine + '\n';
+        });
+
+        return output;
+    }
+
+    function downloadChordPro() {
+        const chordProText = exportChordPro();
+        const blob = new Blob([chordProText], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        const safeName = (state.title || 'min-lat').replace(/[\\/:*?"<>|]/g, '_');
+        a.href = url;
+        a.download = safeName + '.pro';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('ChordPro-fil nedladdad');
+    }
+
+    // === ChordPro import ===
+    // Tvåstegs-parsning:
+    // 1. Dela upp varje rad i { text, chords[] }
+    // 2. Slå ihop intilliggande ackord-rader (rader utan lyrik men med ackord)
+    //    till en gemensam rad — det är så ChordPro-standarden förväntar sig
+    //    att en intro-slinga skrivs på flera rader.
+    function importChordPro(text, fileName) {
+        text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+        const lines = text.split('\n');
+        let title = '';
+        let artist = '';
+        let key = '';
+
+        // --- Steg 1: parsa varje rad ---
+        const parsedLines = [];
+        for (const line of lines) {
+            const titleMatch = line.match(/^\{(?:t|title):\s*(.+?)\s*\}/i);
+            if (titleMatch) { title = titleMatch[1].trim(); continue; }
+
+            const artistMatch = line.match(/^\{(?:a|artist|subtitle|st):\s*(.+?)\s*\}/i);
+            if (artistMatch) { artist = artistMatch[1].trim(); continue; }
+
+            const keyMatch = line.match(/^\{(?:key|k):\s*(.+?)\s*\}/i);
+            if (keyMatch) { key = keyMatch[1].trim().toUpperCase(); continue; }
+
+            if (line.trim().startsWith('{')) continue;
+
+            let lyricText = '';
+            let charPos = 0;
+            let i = 0;
+            let lastWasChord = false;
+            const chordsOnLine = [];
+
+            while (i < line.length) {
+                if (line[i] === '[') {
+                    const closeBracket = line.indexOf(']', i);
+                    if (closeBracket !== -1) {
+                        const chordText = line.substring(i + 1, closeBracket).trim();
+                        if (chordText) {
+                            if (lastWasChord) charPos++;
+                            chordsOnLine.push({ char: charPos, chord: chordText });
+                            lastWasChord = true;
+                        }
+                        i = closeBracket + 1;
+                        continue;
+                    }
+                }
+                lyricText += line[i];
+                charPos++;
+                lastWasChord = false;
+                i++;
+            }
+            parsedLines.push({ text: lyricText, chords: chordsOnLine });
+        }
+
+        // --- Steg 2: slå ihop intilliggande ackord-rader ---
+        const mergedLines = [];
+        let idx = 0;
+        while (idx < parsedLines.length) {
+            const cur = parsedLines[idx];
+            const curIsChordOnly = cur.text.trim() === '' && cur.chords.length > 0;
+
+            if (curIsChordOnly) {
+                const mergedChords = cur.chords.slice();
+                let j = idx + 1;
+                while (j < parsedLines.length) {
+                    const next = parsedLines[j];
+                    const nextIsChordOnly = next.text.trim() === '' && next.chords.length > 0;
+                    if (!nextIsChordOnly) break;
+
+                    const offset = mergedChords.length > 0
+                        ? mergedChords[mergedChords.length - 1].char + 1
+                        : 0;
+                    next.chords.forEach((c, k) => {
+                        mergedChords.push({ char: offset + k, chord: c.chord });
+                    });
+                    j++;
+                }
+                mergedLines.push({ text: '', chords: mergedChords });
+                idx = j;
+            } else {
+                mergedLines.push(cur);
+                idx++;
+            }
+        }
+
+        // --- Bygg state ---
+        const lyricsLines = mergedLines.map(l => l.text);
+        const chords = [];
+        mergedLines.forEach((l, lineIdx) => {
+            l.chords.forEach(c => {
+                chords.push({ line: lineIdx, char: c.char, chord: c.chord });
+            });
+        });
+
+        // Fallback: använd filnamnet "Artist - Titel" om ChordPro saknade info
+        if ((!title || !artist) && fileName) {
+            const baseName = fileName.replace(/\.(pro|chordpro|crd|cho|chopro|txt)$/i, '');
+            const dashMatch = baseName.match(/^(.+?)\s*[-–—]\s*(.+)$/);
+            if (dashMatch) {
+                if (!artist) artist = dashMatch[1].trim();
+                if (!title)  title  = dashMatch[2].trim();
+            } else if (!title) {
+                title = baseName;
+            }
+        }
+
+        if (title)  state.title = title;
+        if (artist) state.artist = artist;
+        if (key && NOTES_SHARP.indexOf(normalizeRoot(key)) !== -1) state.key = key;
+        state.lyrics = lyricsLines.join('\n');
+        state.chords = chords;
+        state.selectedChar = null;
+
+        songTitleInput.value = state.title;
+        songArtistInput.value = state.artist;
+        lyricsText.value = state.lyrics;
+        renderSong();
+        renderPalette();
+        renderKeyboard();
+        save();
+        showToast('ChordPro-fil importerad');
+    }
+
+    function downloadSong() {
+        const data = serializeSong();
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        const safeName = (state.title || 'min-lat').replace(/[\\/:*?"<>|]/g, '_');
+        a.href = url;
+        a.download = safeName + '.chordic.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('Nedladdad');
+    }
+
+    function openFileDialog() { fileInput.click(); }
+
+    fileInput.addEventListener('change', async () => {
+        const file = fileInput.files && fileInput.files[0];
+        if (!file) return;
+        try {
+            const text = await file.text();
+            const lowerName = file.name.toLowerCase();
+            const isJsonExt = lowerName.endsWith('.json');
+            const isChordProExt = /\.(pro|chordpro|crd|cho|chopro)$/.test(lowerName);
+            const hasChordBrackets = /\[[^\]]+\]/.test(text);
+
+            if (isChordProExt || (!isJsonExt && hasChordBrackets)) {
+                importChordPro(text, file.name);
+            } else {
+                const data = JSON.parse(text);
+                applyLoadedSong(data);
+            }
+
+            currentLibraryFile = fsSupported() && libraryDirHandle ? file.name : null;
+            showToast('Öppnade: ' + file.name);
+        } catch (e) {
+            console.warn(e);
+            showToast('Kunde inte läsa filen');
+        } finally {
+            fileInput.value = '';
+        }
+    });
+
+    function applyLoadedSong(data) {
+        if (!data || typeof data.lyrics !== 'string' || !Array.isArray(data.chords)) {
+            showToast('Filen är inte en Chordic-låt');
+            return;
+        }
+        state.title = data.title || 'Min låt';
+        state.artist = data.artist || '';
+        state.lyrics = data.lyrics;
+        state.chords = data.chords;
+        state.key = data.key || 'C';
+        state.selectedChar = null;
+        songTitleInput.value = state.title;
+        songArtistInput.value = state.artist;
+        lyricsText.value = state.lyrics;
+        renderSong(); renderPalette(); renderKeyboard(); save();
+    }
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            state.selectedChar = null;
+            renderSong();
+        }
+    });
+
+    document.getElementById('transDownBtn').addEventListener('click', () => transposeAll(-1));
+    document.getElementById('transUpBtn').addEventListener('click', () => transposeAll(1));
+    document.getElementById('exportChordProBtn').addEventListener('click', downloadChordPro);
+    document.getElementById('importChordProBtn').addEventListener('click', openFileDialog);
+    document.getElementById('printBtn').addEventListener('click', () => window.print());
+    document.getElementById('clearChordsBtn').addEventListener('click', async () => {
+        const ok = await showConfirm('Rensa alla ackord?');
+        if (!ok) return;
+        state.chords = []; renderSong(); save();
+    });
+    document.getElementById('pickLibraryBtn').addEventListener('click', pickLibrary);
+    document.getElementById('saveToLibraryBtn').addEventListener('click', saveToLibrary);
+    document.getElementById('openFileBtn').addEventListener('click', openFileDialog);
+    document.getElementById('downloadBtn').addEventListener('click', downloadSong);
+    document.getElementById('applyLyricsBtn').addEventListener('click', applyLyrics);
+    document.getElementById('resetLyricsBtn').addEventListener('click', resetLyrics);
+
+    songTitleInput.addEventListener('input', () => {
+        state.title = songTitleInput.value;
+        renderSong(); save();
+    });
+    songArtistInput.addEventListener('input', () => {
+        state.artist = songArtistInput.value;
+        renderSong(); save();
+    });
+
+    lyricsText.addEventListener('blur', () => {
+        if (lyricsText.value !== state.lyrics) applyLyrics();
+    });
+
+    const loaded = load();
+    songTitleInput.value = state.title;
+    songArtistInput.value = state.artist;
+    lyricsText.value = state.lyrics;
+    renderPalette();
+    renderKeyboard();
+    renderBuilder();
+    renderSong();
+
+    if (!fsSupported()) {
+        libraryNoteEl.textContent =
+            'Din webbläsare stödjer inte mappval. Använd "Öppna fil" och "Ladda ner" istället.';
+    } else {
+        libraryNoteEl.textContent =
+            'Mappval fungerar i Chromium-baserade webbläsare. ' +
+            'I Firefox och Safari används nedladdning och filuppladdning istället.';
+    }
+})();
+</script>
+</body>
+</html>
