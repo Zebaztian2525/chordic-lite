@@ -59,6 +59,7 @@ Safari you need to start a small local server if you want the folder library:
 ```bash
 python3 -m http.server 8000
 # then open http://localhost:8000/index.html
+```
 
 Downloading and uploading files works in every browser, no matter how the
 page is opened.
@@ -142,4 +143,4 @@ Feedback och bidrag är varmt välkomna!
 Om du vill läsa README på svenska kan du använda webbläsarens
 översättningsfunktion — högerklicka på sidan och välj "Översätt till svenska".
 
-</details> ```
+</details> 
