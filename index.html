@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>đ” Chordic Lite</title>
+<title>🎵 Chordic Lite</title>
 <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; -webkit-tap-highlight-color: transparent; }
     html, body { height: 100%; }
@@ -269,14 +269,13 @@
     .char .chord:hover { background: #c4e8ee; }
     .char .chord.dragging { opacity: 0.35; cursor: default; }
 
-    /* Spacerare fĂ¶r ackord utan lyrik â osynlig men tar plats */
     .char .lyric.spacer {
         visibility: hidden;
         font-size: 0.9rem;
         font-family: 'Segoe UI', Tahoma, sans-serif;
         font-weight: bold;
         white-space: nowrap;
-        padding-right: 8px;
+        padding-right: 10px;
     }
 
     .editor-panel {
@@ -361,18 +360,18 @@
 <body>
 
 <div class="topbar">
-    <h1>đ” Chordic Lite</h1>
+    <h1>🎵 Chordic Lite</h1>
     <input type="text" class="song-input artist-input" id="songArtist"
            placeholder="Artist..." autocomplete="off" spellcheck="false">
     <input type="text" class="song-input title-input" id="songTitle"
-           placeholder="LĂ„tens namn..." autocomplete="off" spellcheck="false">
+           placeholder="Låtens namn..." autocomplete="off" spellcheck="false">
     <div class="toolbar">
-        <button id="transDownBtn" title="Transponera ner ett halvt steg">âÂœ</button>
-        <button id="transUpBtn" title="Transponera upp ett halvt steg">+Âœ</button>
-        <button id="exportChordProBtn" title="Exportera som ChordPro">đ€ ChordPro</button>
-        <button id="importChordProBtn" title="Importera ChordPro-fil">đ„ ChordPro</button>
-        <button id="printBtn">đšïž PDF</button>
-        <button id="clearChordsBtn">đ Rensa ackord</button>
+        <button id="transDownBtn" title="Transponera ner ett halvt steg">−½</button>
+        <button id="transUpBtn" title="Transponera upp ett halvt steg">+½</button>
+        <button id="exportChordProBtn" title="Exportera som ChordPro">📤 ChordPro</button>
+        <button id="importChordProBtn" title="Importera ChordPro-fil">📥 ChordPro</button>
+        <button id="printBtn">🖨️ PDF</button>
+        <button id="clearChordsBtn">🗑 Rensa ackord</button>
     </div>
 </div>
 
@@ -395,7 +394,7 @@
         </div>
 
         <div class="panel">
-            <p class="panel-title">đ ïž Bygg eget ackord</p>
+            <p class="panel-title">🛠️ Bygg eget ackord</p>
             <div class="builder-row">
                 <span class="builder-row-label">Grundton</span>
                 <div class="builder-chips" id="builderRoots"></div>
@@ -410,7 +409,7 @@
             </div>
             <div class="builder-preview-row">
                 <div class="builder-preview-chip" id="builderPreviewChip">C</div>
-                <button class="builder-add-btn" id="builderAddBtn">LĂ€gg till</button>
+                <button class="builder-add-btn" id="builderAddBtn">Lägg till</button>
             </div>
         </div>
 
@@ -418,9 +417,9 @@
 
     <main class="main">
         <div class="info-bar">
-            đ±ïž Dra ackord frĂ„n palett/byggare till en bokstav &nbsp;|&nbsp;
-            â Dra ett fastsatt ackord fĂ¶r att flytta &nbsp;|&nbsp;
-            <kbd>Ctrl</kbd> + klicka pĂ„ ett ackord fĂ¶r att ta bort
+            🖱️ Dra ackord från palett/byggare till en bokstav &nbsp;|&nbsp;
+            ↔ Dra ett fastsatt ackord för att flytta &nbsp;|&nbsp;
+            <kbd>Ctrl</kbd> + klicka på ett ackord för att ta bort
         </div>
         <div class="song" id="song">
             <div class="song-header empty" id="songHeader"></div>
@@ -431,25 +430,25 @@
     <aside class="right-column">
 
         <div class="panel editor-panel">
-            <div class="editor-header">âïž Redigera text</div>
+            <div class="editor-header">✏️ Redigera text</div>
             <textarea id="lyricsText" spellcheck="false"
-                      placeholder="Skriv eller klistra in lĂ„ttexten hĂ€r..."></textarea>
+                      placeholder="Skriv eller klistra in låttexten här..."></textarea>
             <div class="editor-buttons">
-                <button class="cancel" id="resetLyricsBtn">ĂterstĂ€ll</button>
+                <button class="cancel" id="resetLyricsBtn">Återställ</button>
                 <button id="applyLyricsBtn">Spara text</button>
             </div>
         </div>
 
         <div class="panel">
-            <p class="panel-title">đ Bibliotek</p>
+            <p class="panel-title">📚 Bibliotek</p>
             <ul class="library-list" id="libraryList">
                 <li class="empty">Ingen mapp vald</li>
             </ul>
             <div class="library-buttons">
-                <button id="pickLibraryBtn">đ VĂ€lj mapp</button>
-                <button id="saveToLibraryBtn">đŸ Spara i mapp</button>
-                <button id="openFileBtn">đ Ăppna fil</button>
-                <button id="downloadBtn">âŹ Ladda ner</button>
+                <button id="pickLibraryBtn">📁 Välj mapp</button>
+                <button id="saveToLibraryBtn">💾 Spara i mapp</button>
+                <button id="openFileBtn">📂 Öppna fil</button>
+                <button id="downloadBtn">⬇ Ladda ner</button>
             </div>
             <p class="library-note" id="libraryNote"></p>
         </div>
@@ -511,7 +510,7 @@
         "Was blind but now I see";
 
     let state = {
-        title: 'Min lĂ„t',
+        title: 'Min låt',
         artist: '',
         lyrics: DEFAULT_LYRICS,
         chords: [],
@@ -599,7 +598,6 @@
         return builder.root + builder.quality + (builder.bass ? '/' + builder.bass : '');
     }
 
-    // === Drag-motor ===
     function createGhost(text, x, y) {
         const g = document.createElement('div');
         g.className = 'ghost';
@@ -666,7 +664,6 @@
         sourceEl.addEventListener('pointercancel', onUp);
     }
 
-    // === Palett ===
     function renderPalette() {
         paletteChips.innerHTML = '';
         getDiatonicChords(state.key).forEach(chord => {
@@ -680,7 +677,7 @@
                 if (state.selectedChar) {
                     addChord(state.selectedChar.line, state.selectedChar.char, chord);
                 } else {
-                    showToast('Klicka pĂ„ en bokstav i texten fĂ¶rst');
+                    showToast('Klicka på en bokstav i texten först');
                 }
             });
             paletteChips.appendChild(chip);
@@ -688,7 +685,6 @@
         currentKeyLabel.textContent = state.key;
     }
 
-    // === Klaviatur ===
     function renderKeyboard() {
         whiteKeysEl.innerHTML = '';
         ['C','D','E','F','G','A','B'].forEach(note => {
@@ -714,7 +710,6 @@
         renderPalette(); renderKeyboard(); save();
     }
 
-    // === Byggare ===
     function renderBuilder() {
         builderRootsEl.innerHTML = '';
         NOTES_SHARP.forEach(note => {
@@ -757,15 +752,13 @@
     });
     builderAddBtn.addEventListener('click', () => {
         if (!state.selectedChar) {
-            showToast('Klicka pĂ„ en bokstav i texten fĂ¶rst!');
+            showToast('Klicka på en bokstav i texten först!');
             return;
         }
         addChord(state.selectedChar.line, state.selectedChar.char, composedChordText());
     });
 
-    // === Rendering av lĂ„t ===
     function renderSong() {
-        // Rubrik + artist hĂ¶gst upp
         if (state.title || state.artist) {
             songHeaderEl.classList.remove('empty');
             songHeaderEl.innerHTML = '';
@@ -786,7 +779,6 @@
             songHeaderEl.innerHTML = '';
         }
 
-        // SjĂ€lva lĂ„ttexten
         songEl.innerHTML = '';
         const lines = state.lyrics.split('\n');
         lines.forEach((lineText, lineIdx) => {
@@ -794,7 +786,6 @@
             lineEl.className = 'line';
             const chars = Array.from(lineText);
 
-            // Ackord som ligger EFTER sista bokstaven (eller pĂ„ tom rad)
             const endChords = state.chords
                 .filter(c => c.line === lineIdx && c.char >= chars.length)
                 .sort((a, b) => a.char - b.char);
@@ -832,7 +823,7 @@
                         const chordEl = document.createElement('span');
                         chordEl.className = 'chord';
                         chordEl.textContent = chord.chord;
-                        chordEl.title = 'Dra fĂ¶r att flytta, Ctrl+klick fĂ¶r att ta bort';
+                        chordEl.title = 'Dra för att flytta, Ctrl+klick för att ta bort';
                         chordEl.addEventListener('pointerdown', e => {
                             e.stopPropagation();
                             startDrag(e, chordEl, () => chord.chord, (newLine, newChar) => {
@@ -854,9 +845,6 @@
                 i = j;
             }
 
-            // Rendera ackord som ligger efter sista tecknet (eller pĂ„ tom rad).
-            // Spaceraren (den osynliga .lyric.spacer) har samma bredd som ackordet,
-            // sĂ„ staplade ackord inte kollapsar ovanpĂ„ varandra.
             endChords.forEach(chord => {
                 const charEl = document.createElement('span');
                 charEl.className = 'char';
@@ -878,7 +866,7 @@
                 const chordEl = document.createElement('span');
                 chordEl.className = 'chord';
                 chordEl.textContent = chord.chord;
-                chordEl.title = 'Dra fĂ¶r att flytta, Ctrl+klick fĂ¶r att ta bort';
+                chordEl.title = 'Dra för att flytta, Ctrl+klick för att ta bort';
                 chordEl.addEventListener('pointerdown', e => {
                     e.stopPropagation();
                     startDrag(e, chordEl, () => chord.chord, (newLine, newChar) => {
@@ -895,7 +883,6 @@
                 lineEl.appendChild(charEl);
             });
 
-            // Bara visa &nbsp; om raden Ă€r helt tom OCH inte fick nĂ„gra ackord
             if (lineText === '' && lineEl.children.length === 0) {
                 lineEl.innerHTML = '&nbsp;';
             }
@@ -937,7 +924,6 @@
         renderSong(); renderPalette(); renderKeyboard(); save();
     }
 
-    // === Textredigering ===
     function applyLyrics() {
         const newLyrics = lyricsText.value;
         const lineCount = newLyrics.split('\n').length;
@@ -948,10 +934,9 @@
     }
     function resetLyrics() {
         lyricsText.value = state.lyrics;
-        showToast('ĂterstĂ€lld');
+        showToast('Återställd');
     }
 
-    // === Sparning ===
     function save() {
         try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
         catch (e) { console.warn('Kunde inte spara:', e); }
@@ -962,7 +947,7 @@
             if (!raw) return false;
             const data = JSON.parse(raw);
             if (data && typeof data.lyrics === 'string' && Array.isArray(data.chords)) {
-                state.title = data.title || 'Min lĂ„t';
+                state.title = data.title || 'Min låt';
                 state.artist = data.artist || '';
                 state.lyrics = data.lyrics;
                 state.chords = data.chords;
@@ -970,367 +955,18 @@
                 state.selectedChar = null;
                 return true;
             }
-        } catch (e) { console.warn('Kunde inte lĂ€sa:', e); }
+        } catch (e) { console.warn('Kunde inte läsa:', e); }
         return false;
     }
 
-    // === Bibliotek (File System Access API) ===
     function fsSupported() {
         return typeof window.showDirectoryPicker === 'function';
     }
 
     async function pickLibrary() {
         if (!fsSupported()) {
-            showToast('Mappval krĂ€ver Chromium-baserad webblĂ€sare');
+            showToast('Mappval kräver Chromium-baserad webbläsare');
             return;
         }
         try {
-            libraryDirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
-            currentLibraryFile = null;
-            await refreshLibraryList();
-            showToast('Mapp vald');
-        } catch (e) {
-            if (e.name !== 'AbortError') console.warn(e);
-        }
-    }
-
-    async function refreshLibraryList() {
-        libraryListEl.innerHTML = '';
-        if (!libraryDirHandle) {
-            libraryListEl.innerHTML = '<li class="empty">Ingen mapp vald</li>';
-            return;
-        }
-        const names = [];
-        for await (const entry of libraryDirHandle.values()) {
-            if (entry.kind === 'file' &&
-                (entry.name.endsWith('.chordic.json') || entry.name.endsWith('.pro'))) {
-                names.push(entry.name);
-            }
-        }
-        names.sort();
-        if (names.length === 0) {
-            libraryListEl.innerHTML = '<li class="empty">Inga lĂ„tar i mappen</li>';
-            return;
-        }
-        names.forEach(name => {
-            const li = document.createElement('li');
-            const display = name.replace(/\.(chordic\.json|pro)$/i, '');
-            li.textContent = display;
-            if (name === currentLibraryFile) li.classList.add('active');
-            li.addEventListener('click', () => loadFromLibrary(name));
-            libraryListEl.appendChild(li);
-        });
-    }
-
-    async function saveToLibrary() {
-        if (!fsSupported()) {
-            showToast('Mappval krĂ€ver Chromium-baserad webblĂ€sare');
-            return;
-        }
-        if (!libraryDirHandle) {
-            await pickLibrary();
-            if (!libraryDirHandle) return;
-        }
-        const name = prompt('Filnamn:', state.title || 'Min lĂ„t');
-        if (!name) return;
-        const fileName = name.trim().replace(/[\\/:*?"<>|]/g, '_') + '.chordic.json';
-        try {
-            const handle = await libraryDirHandle.getFileHandle(fileName, { create: true });
-            const writable = await handle.createWritable();
-            await writable.write(JSON.stringify(serializeSong(), null, 2));
-            await writable.close();
-            currentLibraryFile = fileName;
-            state.title = name.trim();
-            songTitleInput.value = state.title;
-            save();
-            await refreshLibraryList();
-            showToast('Sparat: ' + fileName);
-        } catch (e) {
-            console.warn(e);
-            showToast('Kunde inte spara filen');
-        }
-    }
-
-    async function loadFromLibrary(fileName) {
-        if (!libraryDirHandle) return;
-        try {
-            const handle = await libraryDirHandle.getFileHandle(fileName);
-            const file = await handle.getFile();
-            const text = await file.text();
-            if (fileName.toLowerCase().endsWith('.pro')) {
-                importChordPro(text, fileName);
-            } else {
-                const data = JSON.parse(text);
-                applyLoadedSong(data);
-            }
-            currentLibraryFile = fileName;
-            await refreshLibraryList();
-            showToast('Ăppnade: ' + fileName);
-        } catch (e) {
-            console.warn(e);
-            showToast('Kunde inte lĂ€sa filen');
-        }
-    }
-
-    function serializeSong() {
-        return {
-            format: 'chordic-lite',
-            version: 2,
-            title: state.title,
-            artist: state.artist,
-            key: state.key,
-            lyrics: state.lyrics,
-            chords: state.chords
-        };
-    }
-
-    // === ChordPro export ===
-    function exportChordPro() {
-        let output = '';
-        if (state.title)  output += '{title: ' + state.title + '}\n';
-        if (state.artist) output += '{artist: ' + state.artist + '}\n';
-        output += '{key: ' + state.key + '}\n';
-        output += '\n';
-
-        const lines = state.lyrics.split('\n');
-        lines.forEach((lineText, lineIdx) => {
-            const chars = Array.from(lineText);
-            let resultLine = '';
-
-            for (let i = 0; i < chars.length; i++) {
-                const chord = state.chords.find(c =>
-                    c.line === lineIdx && c.char === i);
-                if (chord) resultLine += '[' + chord.chord + ']';
-                resultLine += chars[i];
-            }
-
-            const endChords = state.chords
-                .filter(c => c.line === lineIdx && c.char >= chars.length)
-                .sort((a, b) => a.char - b.char);
-            endChords.forEach(chord => {
-                resultLine += '[' + chord.chord + ']';
-            });
-
-            output += resultLine + '\n';
-        });
-
-        return output;
-    }
-
-    function downloadChordPro() {
-        const chordProText = exportChordPro();
-        const blob = new Blob([chordProText], { type: 'text/plain;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        const safeName = (state.title || 'min-lat').replace(/[\\/:*?"<>|]/g, '_');
-        a.href = url;
-        a.download = safeName + '.pro';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        showToast('ChordPro-fil nedladdad');
-    }
-
-    // === ChordPro import ===
-    function importChordPro(text, fileName) {
-        text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-        const lines = text.split('\n');
-        let title = '';
-        let artist = '';
-        let key = '';
-        const lyricsLines = [];
-        const chords = [];
-
-        lines.forEach(line => {
-            const titleMatch = line.match(/^\{(?:t|title):\s*(.+?)\s*\}/i);
-            if (titleMatch) { title = titleMatch[1].trim(); return; }
-
-            const artistMatch = line.match(/^\{(?:a|artist|subtitle|st):\s*(.+?)\s*\}/i);
-            if (artistMatch) { artist = artistMatch[1].trim(); return; }
-
-            const keyMatch = line.match(/^\{(?:key|k):\s*(.+?)\s*\}/i);
-            if (keyMatch) { key = keyMatch[1].trim().toUpperCase(); return; }
-
-            if (line.trim().startsWith('{')) return;
-
-            let lyricText = '';
-            let charPos = 0;
-            let i = 0;
-            let lastWasChord = false;
-
-            while (i < line.length) {
-                if (line[i] === '[') {
-                    const closeBracket = line.indexOf(']', i);
-                    if (closeBracket !== -1) {
-                        const chordText = line.substring(i + 1, closeBracket).trim();
-                        if (chordText) {
-                            if (lastWasChord) charPos++;
-                            chords.push({
-                                line: lyricsLines.length,
-                                char: charPos,
-                                chord: chordText
-                            });
-                            lastWasChord = true;
-                        }
-                        i = closeBracket + 1;
-                        continue;
-                    }
-                }
-                lyricText += line[i];
-                charPos++;
-                lastWasChord = false;
-                i++;
-            }
-
-            lyricsLines.push(lyricText);
-        });
-
-        if ((!title || !artist) && fileName) {
-            const baseName = fileName.replace(/\.(pro|chordpro|crd|cho|chopro|txt)$/i, '');
-            const dashMatch = baseName.match(/^(.+?)\s*[-ââ]\s*(.+)$/);
-            if (dashMatch) {
-                if (!artist) artist = dashMatch[1].trim();
-                if (!title)  title  = dashMatch[2].trim();
-            } else if (!title) {
-                title = baseName;
-            }
-        }
-
-        if (title)  state.title = title;
-        if (artist) state.artist = artist;
-        if (key && NOTES_SHARP.indexOf(normalizeRoot(key)) !== -1) state.key = key;
-        state.lyrics = lyricsLines.join('\n');
-        state.chords = chords;
-        state.selectedChar = null;
-
-        songTitleInput.value = state.title;
-        songArtistInput.value = state.artist;
-        lyricsText.value = state.lyrics;
-        renderSong();
-        renderPalette();
-        renderKeyboard();
-        save();
-        showToast('ChordPro-fil importerad');
-    }
-
-    function downloadSong() {
-        const data = serializeSong();
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        const safeName = (state.title || 'min-lat').replace(/[\\/:*?"<>|]/g, '_');
-        a.href = url;
-        a.download = safeName + '.chordic.json';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        showToast('Nedladdad');
-    }
-
-    function openFileDialog() { fileInput.click(); }
-
-    fileInput.addEventListener('change', async () => {
-        const file = fileInput.files && fileInput.files[0];
-        if (!file) return;
-        try {
-            const text = await file.text();
-            const lowerName = file.name.toLowerCase();
-            const isJsonExt = lowerName.endsWith('.json');
-            const isChordProExt = /\.(pro|chordpro|crd|cho|chopro)$/.test(lowerName);
-            const hasChordBrackets = /\[[^\]]+\]/.test(text);
-
-            if (isChordProExt || (!isJsonExt && hasChordBrackets)) {
-                importChordPro(text, file.name);
-            } else {
-                const data = JSON.parse(text);
-                applyLoadedSong(data);
-            }
-
-            currentLibraryFile = fsSupported() && libraryDirHandle ? file.name : null;
-            showToast('Ăppnade: ' + file.name);
-        } catch (e) {
-            console.warn(e);
-            showToast('Kunde inte lĂ€sa filen');
-        } finally {
-            fileInput.value = '';
-        }
-    });
-
-    function applyLoadedSong(data) {
-        if (!data || typeof data.lyrics !== 'string' || !Array.isArray(data.chords)) {
-            showToast('Filen Ă€r inte en Chordic-lĂ„t');
-            return;
-        }
-        state.title = data.title || 'Min lĂ„t';
-        state.artist = data.artist || '';
-        state.lyrics = data.lyrics;
-        state.chords = data.chords;
-        state.key = data.key || 'C';
-        state.selectedChar = null;
-        songTitleInput.value = state.title;
-        songArtistInput.value = state.artist;
-        lyricsText.value = state.lyrics;
-        renderSong(); renderPalette(); renderKeyboard(); save();
-    }
-
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') {
-            state.selectedChar = null;
-            renderSong();
-        }
-    });
-
-    document.getElementById('transDownBtn').addEventListener('click', () => transposeAll(-1));
-    document.getElementById('transUpBtn').addEventListener('click', () => transposeAll(1));
-    document.getElementById('exportChordProBtn').addEventListener('click', downloadChordPro);
-    document.getElementById('importChordProBtn').addEventListener('click', openFileDialog);
-    document.getElementById('printBtn').addEventListener('click', () => window.print());
-    document.getElementById('clearChordsBtn').addEventListener('click', async () => {
-        const ok = await showConfirm('Rensa alla ackord?');
-        if (!ok) return;
-        state.chords = []; renderSong(); save();
-    });
-    document.getElementById('pickLibraryBtn').addEventListener('click', pickLibrary);
-    document.getElementById('saveToLibraryBtn').addEventListener('click', saveToLibrary);
-    document.getElementById('openFileBtn').addEventListener('click', openFileDialog);
-    document.getElementById('downloadBtn').addEventListener('click', downloadSong);
-    document.getElementById('applyLyricsBtn').addEventListener('click', applyLyrics);
-    document.getElementById('resetLyricsBtn').addEventListener('click', resetLyrics);
-
-    songTitleInput.addEventListener('input', () => {
-        state.title = songTitleInput.value;
-        renderSong(); save();
-    });
-    songArtistInput.addEventListener('input', () => {
-        state.artist = songArtistInput.value;
-        renderSong(); save();
-    });
-
-    lyricsText.addEventListener('blur', () => {
-        if (lyricsText.value !== state.lyrics) applyLyrics();
-    });
-
-    // === Init ===
-    const loaded = load();
-    songTitleInput.value = state.title;
-    songArtistInput.value = state.artist;
-    lyricsText.value = state.lyrics;
-    renderPalette();
-    renderKeyboard();
-    renderBuilder();
-    renderSong();
-
-    if (!fsSupported()) {
-        libraryNoteEl.textContent =
-            'Din webblĂ€sare stĂ¶djer inte mappval. AnvĂ€nd "Ăppna fil" och "Ladda ner" istĂ€llet.';
-    } else {
-        libraryNoteEl.textContent =
-            'Mappval fungerar i Chromium-baserade webblĂ€sare. ' +
-            'I Firefox och Safari anvĂ€nds nedladdning och filuppladdning istĂ€llet.';
-    }
-})();
-</script>
-</body>
-</html>
+            libraryDirHandle = await
