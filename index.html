@@ -18,18 +18,21 @@
 
     .topbar {
         display: flex; align-items: center; justify-content: space-between;
-        flex-wrap: wrap; gap: 10px;
+        flex-wrap: wrap; gap: 8px;
         background: #f0fafc; border: 3px solid #7ec4d0;
-        border-radius: 20px; padding: 12px 20px; margin-bottom: 12px;
+        border-radius: 20px; padding: 10px 18px; margin-bottom: 12px;
         box-shadow: 0 10px 24px rgba(0,0,0,0.35);
     }
-    .topbar h1 { margin: 0; font-size: 1.4rem; color: #0d3f4c; letter-spacing: 0.5px; white-space: nowrap; }
-    .song-title-input {
-        flex: 1; min-width: 140px; max-width: 320px;
-        padding: 6px 14px; border: 2px solid #7ec4d0; border-radius: 20px;
-        font-size: 0.95rem; font-weight: bold; background: #fff; color: #0d3f4c;
+    .topbar h1 { margin: 0; font-size: 1.3rem; color: #0d3f4c; letter-spacing: 0.5px; white-space: nowrap; }
+    .song-input {
+        padding: 6px 12px; border: 2px solid #7ec4d0; border-radius: 20px;
+        font-size: 0.9rem; font-weight: bold; background: #fff; color: #0d3f4c;
+        min-width: 100px; flex: 1 1 130px;
     }
-    .song-title-input:focus { outline: none; border-color: #1a6b7c; }
+    .song-input.artist-input { max-width: 180px; }
+    .song-input.title-input  { max-width: 240px; flex: 1 1 180px; }
+    .song-input:focus { outline: none; border-color: #1a6b7c; }
+
     .toolbar { display: flex; gap: 6px; flex-wrap: wrap; }
     .toolbar button {
         background: #d3e9ed; border: none; border-radius: 30px;
@@ -41,25 +44,39 @@
 
     .layout {
         display: grid;
-        grid-template-columns: 340px minmax(0, 1fr) 380px;
+        grid-template-columns: 340px minmax(0, 1fr) 400px;
         gap: 12px;
         align-items: start;
     }
-    @media (max-width: 1200px) {
+    @media (max-width: 1300px) {
         .layout { grid-template-columns: 1fr; }
     }
 
     .sidebar {
         display: flex; flex-direction: column; gap: 12px;
     }
-    @media (min-width: 901px) {
+    @media (min-width: 1301px) {
         .sidebar {
-            position: sticky;
-            top: 14px;
+            position: sticky; top: 14px;
             max-height: calc(100vh - 28px);
-            overflow-y: auto;
-            padding-right: 2px;
+            overflow-y: auto; padding-right: 2px;
         }
+    }
+
+    .right-column {
+        display: flex; flex-direction: column; gap: 12px;
+    }
+    @media (min-width: 1301px) {
+        .right-column {
+            position: sticky; top: 14px;
+            max-height: calc(100vh - 28px);
+            overflow-y: auto; padding-right: 2px;
+        }
+    }
+
+    .main {
+        display: flex; flex-direction: column; gap: 12px;
+        min-width: 0;
     }
 
     .panel {
@@ -72,6 +89,23 @@
         font-size: 0.8rem; font-weight: bold; color: #0d3f4c;
         text-transform: uppercase; letter-spacing: 0.6px;
         margin: 0 0 2px;
+    }
+
+    .info-bar {
+        text-align: center;
+        color: #d9eef3;
+        font-size: 0.82rem;
+        font-style: italic;
+        background: rgba(13,63,76,0.35);
+        padding: 8px 14px;
+        border-radius: 12px;
+        border: 2px solid rgba(126,196,208,0.4);
+        line-height: 1.6;
+    }
+    .info-bar kbd {
+        background: #0d3f4c; color: #fff;
+        padding: 2px 6px; border-radius: 4px; font-size: 0.75rem;
+        font-family: 'Courier New', monospace;
     }
 
     .key-panel { display: flex; flex-direction: column; gap: 6px; }
@@ -143,7 +177,7 @@
 
     .library-list {
         list-style: none; padding: 0; margin: 0;
-        max-height: 180px; overflow-y: auto;
+        max-height: 220px; overflow-y: auto;
         border: 1px dashed #a8d5dd; border-radius: 8px;
     }
     .library-list li {
@@ -175,8 +209,29 @@
         font-family: 'Courier New', monospace; font-size: 1rem;
         line-height: 1.2; min-height: 600px;
         box-shadow: 0 10px 24px rgba(0,0,0,0.3); color: #0d3f4c;
-        overflow-x: auto; max-width: 210mm; margin: 0 auto;
+        overflow-x: auto; max-width: 210mm; margin: 0 auto; width: 100%;
     }
+    .song-header {
+        text-align: center;
+        margin: 0 0 30px;
+        padding-bottom: 18px;
+        border-bottom: 2px solid #e0eef1;
+        font-family: 'Segoe UI', Tahoma, sans-serif;
+    }
+    .song-header.empty { display: none; }
+    .song-header .artist {
+        font-size: 1rem;
+        color: #5c8d96;
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+    .song-header .title {
+        font-size: 1.5rem;
+        color: #0d3f4c;
+        font-weight: bold;
+        margin: 0;
+    }
+
     .line { margin-bottom: 14px; min-height: 2em; }
     .word-wrap { display: inline; white-space: nowrap; }
 
@@ -214,26 +269,29 @@
     .char .chord:hover { background: #c4e8ee; }
     .char .chord.dragging { opacity: 0.35; cursor: default; }
 
+    /* Spacerare fĂ¶r ackord utan lyrik â osynlig men tar plats */
+    .char .lyric.spacer {
+        visibility: hidden;
+        font-size: 0.9rem;
+        font-family: 'Segoe UI', Tahoma, sans-serif;
+        font-weight: bold;
+        white-space: nowrap;
+        padding-right: 8px;
+    }
+
     .editor-panel {
         display: flex; flex-direction: column; gap: 10px;
-        padding: 14px 16px;
     }
     .editor-panel .editor-header {
-        display: flex; justify-content: space-between; align-items: center;
         font-weight: bold; color: #0d3f4c; font-size: 0.9rem;
     }
-    .editor-panel .editor-header button {
-        background: transparent; border: none;
-        font-size: 1.4rem; cursor: default; color: #5c8d96;
-        line-height: 1; padding: 0 6px; border-radius: 6px;
-    }
-    .editor-panel .editor-header button:hover { color: #0d3f4c; background: #d3e9ed; }
     .editor-panel textarea {
-        width: 100%; padding: 10px;
+        width: 100%; padding: 12px;
         border: 2px solid #7ec4d0; border-radius: 10px;
         font-family: 'Courier New', monospace; font-size: 0.9rem;
         background: #fff; resize: vertical; color: #0d3f4c;
-        line-height: 1.4; min-height: 120px;
+        line-height: 1.5;
+        min-height: 500px;
     }
     .editor-panel textarea:focus { outline: none; border-color: #1a6b7c; }
     .editor-panel .editor-buttons { display: flex; justify-content: flex-end; gap: 8px; }
@@ -251,15 +309,6 @@
         padding: 5px 12px; font-weight: bold; font-size: 0.85rem;
         box-shadow: 0 8px 20px rgba(0,0,0,0.4);
         transform: translate(-50%, -150%);
-    }
-
-    .info {
-        text-align: center; color: #d9eef3;
-        margin-top: 14px; font-size: 0.85rem; font-style: italic;
-    }
-    .info kbd {
-        background: #0d3f4c; color: #fff;
-        padding: 2px 6px; border-radius: 4px; font-size: 0.75rem;
     }
 
     .confirm-overlay {
@@ -294,13 +343,16 @@
 
     @media print {
         body { background: #fff; padding: 0; }
-        .topbar, .sidebar, .info,
+        .topbar, .sidebar, .right-column, .info-bar,
         .confirm-overlay, .toast { display: none !important; }
         .layout { display: block; }
+        .main { display: block; }
         .song {
             border: none; box-shadow: none;
             background: #fff; padding: 0; color: #000;
+            max-width: 100%;
         }
+        .song-header { border-bottom: none; margin-bottom: 20px; }
         .char .chord { color: #000; }
         .char.selected .lyric { background: transparent; outline: none; }
     }
@@ -310,12 +362,13 @@
 
 <div class="topbar">
     <h1>đ” Chordic Lite</h1>
-    <input type="text" class="song-title-input" id="songTitle"
+    <input type="text" class="song-input artist-input" id="songArtist"
+           placeholder="Artist..." autocomplete="off" spellcheck="false">
+    <input type="text" class="song-input title-input" id="songTitle"
            placeholder="LĂ„tens namn..." autocomplete="off" spellcheck="false">
     <div class="toolbar">
         <button id="transDownBtn" title="Transponera ner ett halvt steg">âÂœ</button>
         <button id="transUpBtn" title="Transponera upp ett halvt steg">+Âœ</button>
-        <button id="editLyricsBtn">âïž Text</button>
         <button id="exportChordProBtn" title="Exportera som ChordPro">đ€ ChordPro</button>
         <button id="importChordProBtn" title="Importera ChordPro-fil">đ„ ChordPro</button>
         <button id="printBtn">đšïž PDF</button>
@@ -361,6 +414,32 @@
             </div>
         </div>
 
+    </aside>
+
+    <main class="main">
+        <div class="info-bar">
+            đ±ïž Dra ackord frĂ„n palett/byggare till en bokstav &nbsp;|&nbsp;
+            â Dra ett fastsatt ackord fĂ¶r att flytta &nbsp;|&nbsp;
+            <kbd>Ctrl</kbd> + klicka pĂ„ ett ackord fĂ¶r att ta bort
+        </div>
+        <div class="song" id="song">
+            <div class="song-header empty" id="songHeader"></div>
+            <div class="song-body" id="songBody"></div>
+        </div>
+    </main>
+
+    <aside class="right-column">
+
+        <div class="panel editor-panel">
+            <div class="editor-header">âïž Redigera text</div>
+            <textarea id="lyricsText" spellcheck="false"
+                      placeholder="Skriv eller klistra in lĂ„ttexten hĂ€r..."></textarea>
+            <div class="editor-buttons">
+                <button class="cancel" id="resetLyricsBtn">ĂterstĂ€ll</button>
+                <button id="applyLyricsBtn">Spara text</button>
+            </div>
+        </div>
+
         <div class="panel">
             <p class="panel-title">đ Bibliotek</p>
             <ul class="library-list" id="libraryList">
@@ -372,29 +451,9 @@
                 <button id="openFileBtn">đ Ăppna fil</button>
                 <button id="downloadBtn">âŹ Ladda ner</button>
             </div>
-            <p class="library-note" id="libraryNote">
-                Mappval krĂ€ver Chrome/Edge och att sidan kĂ¶rs via localhost eller HTTPS.
-                Annars anvĂ€nds nedladdning och filuppladdning.
-            </p>
+            <p class="library-note" id="libraryNote"></p>
         </div>
 
-    </aside>
-
-    <main class="main">
-        <div class="song" id="song"></div>
-    </main>
-
-    <aside class="editor-panel" id="editorPanel">
-        <div class="editor-header">
-            <span>âïž Redigera text</span>
-            <button id="closeEditorBtn" title="StĂ€ng">Ă</button>
-        </div>
-        <textarea id="lyricsText" spellcheck="false"
-                  placeholder="Skriv eller klistra in lĂ„ttexten hĂ€r..."></textarea>
-        <div class="editor-buttons">
-            <button class="cancel" id="cancelLyricsBtn">Avbryt</button>
-            <button id="applyLyricsBtn">Spara text</button>
-        </div>
     </aside>
 
 </div>
@@ -410,22 +469,15 @@
 </div>
 <div class="toast" id="toast"></div>
 
-<!-- ĂNDRAT: accepterar nu Ă€ven ChordPro-filer -->
 <input type="file" id="fileInput"
        accept=".json,.chordic.json,.pro,.chordpro,.crd,.cho,.chopro,.txt"
        style="display:none">
-
-<div class="info">
-    đ±ïž Dra ackord frĂ„n palett/byggare till en bokstav &nbsp;|&nbsp;
-    â Dra ett fastsatt ackord fĂ¶r att flytta &nbsp;|&nbsp;
-    <kbd>Ctrl</kbd> + klicka pĂ„ ett ackord fĂ¶r att ta bort
-</div>
 
 <script>
 (function() {
     'use strict';
 
-    const STORAGE_KEY = 'chordic_lite_v4';
+    const STORAGE_KEY = 'chordic_lite_v5';
     const NOTES_SHARP = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
     const MAJOR_INTERVALS = [0, 2, 4, 5, 7, 9, 11];
     const CHORD_QUALITIES = ['', 'm', 'm', '', '', 'm', 'dim'];
@@ -460,6 +512,7 @@
 
     let state = {
         title: 'Min lĂ„t',
+        artist: '',
         lyrics: DEFAULT_LYRICS,
         chords: [],
         key: 'C',
@@ -470,12 +523,12 @@
     let libraryDirHandle = null;
     let currentLibraryFile = null;
 
-    const songEl = document.getElementById('song');
+    const songHeaderEl = document.getElementById('songHeader');
+    const songEl = document.getElementById('songBody');
     const paletteChips = document.getElementById('paletteChips');
     const keyboardEl = document.getElementById('keyboard');
     const whiteKeysEl = document.getElementById('whiteKeys');
     const currentKeyLabel = document.getElementById('currentKeyLabel');
-    const editorPanel = document.getElementById('editorPanel');
     const lyricsText = document.getElementById('lyricsText');
     const builderRootsEl = document.getElementById('builderRoots');
     const builderQualitiesEl = document.getElementById('builderQualities');
@@ -488,6 +541,7 @@
     const confirmNoBtn = document.getElementById('confirmNoBtn');
     const toastEl = document.getElementById('toast');
     const songTitleInput = document.getElementById('songTitle');
+    const songArtistInput = document.getElementById('songArtist');
     const libraryListEl = document.getElementById('libraryList');
     const libraryNoteEl = document.getElementById('libraryNote');
     const fileInput = document.getElementById('fileInput');
@@ -545,6 +599,7 @@
         return builder.root + builder.quality + (builder.bass ? '/' + builder.bass : '');
     }
 
+    // === Drag-motor ===
     function createGhost(text, x, y) {
         const g = document.createElement('div');
         g.className = 'ghost';
@@ -611,6 +666,7 @@
         sourceEl.addEventListener('pointercancel', onUp);
     }
 
+    // === Palett ===
     function renderPalette() {
         paletteChips.innerHTML = '';
         getDiatonicChords(state.key).forEach(chord => {
@@ -632,6 +688,7 @@
         currentKeyLabel.textContent = state.key;
     }
 
+    // === Klaviatur ===
     function renderKeyboard() {
         whiteKeysEl.innerHTML = '';
         ['C','D','E','F','G','A','B'].forEach(note => {
@@ -657,6 +714,7 @@
         renderPalette(); renderKeyboard(); save();
     }
 
+    // === Byggare ===
     function renderBuilder() {
         builderRootsEl.innerHTML = '';
         NOTES_SHARP.forEach(note => {
@@ -705,7 +763,30 @@
         addChord(state.selectedChar.line, state.selectedChar.char, composedChordText());
     });
 
+    // === Rendering av lĂ„t ===
     function renderSong() {
+        // Rubrik + artist hĂ¶gst upp
+        if (state.title || state.artist) {
+            songHeaderEl.classList.remove('empty');
+            songHeaderEl.innerHTML = '';
+            if (state.artist) {
+                const artistEl = document.createElement('div');
+                artistEl.className = 'artist';
+                artistEl.textContent = state.artist;
+                songHeaderEl.appendChild(artistEl);
+            }
+            if (state.title) {
+                const titleEl = document.createElement('div');
+                titleEl.className = 'title';
+                titleEl.textContent = state.title;
+                songHeaderEl.appendChild(titleEl);
+            }
+        } else {
+            songHeaderEl.classList.add('empty');
+            songHeaderEl.innerHTML = '';
+        }
+
+        // SjĂ€lva lĂ„ttexten
         songEl.innerHTML = '';
         const lines = state.lyrics.split('\n');
         lines.forEach((lineText, lineIdx) => {
@@ -713,8 +794,10 @@
             lineEl.className = 'line';
             const chars = Array.from(lineText);
 
-            const endChords = state.chords.filter(c =>
-                c.line === lineIdx && c.char >= chars.length);
+            // Ackord som ligger EFTER sista bokstaven (eller pĂ„ tom rad)
+            const endChords = state.chords
+                .filter(c => c.line === lineIdx && c.char >= chars.length)
+                .sort((a, b) => a.char - b.char);
 
             let charIdx = 0, i = 0;
             while (i < chars.length) {
@@ -771,6 +854,9 @@
                 i = j;
             }
 
+            // Rendera ackord som ligger efter sista tecknet (eller pĂ„ tom rad).
+            // Spaceraren (den osynliga .lyric.spacer) har samma bredd som ackordet,
+            // sĂ„ staplade ackord inte kollapsar ovanpĂ„ varandra.
             endChords.forEach(chord => {
                 const charEl = document.createElement('span');
                 charEl.className = 'char';
@@ -784,9 +870,8 @@
                 }
 
                 const lyricEl = document.createElement('span');
-                lyricEl.className = 'lyric';
-                lyricEl.textContent = '\u00A0';
-                lyricEl.style.visibility = 'hidden';
+                lyricEl.className = 'lyric spacer';
+                lyricEl.textContent = chord.chord;
                 lyricEl.addEventListener('click', () => selectChar(lineIdx, chord.char));
                 charEl.appendChild(lyricEl);
 
@@ -810,10 +895,14 @@
                 lineEl.appendChild(charEl);
             });
 
-            if (lineText === '') lineEl.innerHTML = '&nbsp;';
+            // Bara visa &nbsp; om raden Ă€r helt tom OCH inte fick nĂ„gra ackord
+            if (lineText === '' && lineEl.children.length === 0) {
+                lineEl.innerHTML = '&nbsp;';
+            }
             songEl.appendChild(lineEl);
         });
     }
+
     function selectChar(line, char) {
         state.selectedChar = { line, char };
         renderSong();
@@ -848,22 +937,21 @@
         renderSong(); renderPalette(); renderKeyboard(); save();
     }
 
-    function openEditor() {
-        lyricsText.value = state.lyrics;
-        editorPanel.classList.add('visible');
-        lyricsText.focus();
-    }
-    function closeEditor() { editorPanel.classList.remove('visible'); }
+    // === Textredigering ===
     function applyLyrics() {
         const newLyrics = lyricsText.value;
-        const lineLengths = newLyrics.split('\n').map(l => Array.from(l).length);
-        state.chords = state.chords.filter(c =>
-            c.line < lineLengths.length && (c.char < lineLengths[c.line] || c.char >= 0));
+        const lineCount = newLyrics.split('\n').length;
+        state.chords = state.chords.filter(c => c.line < lineCount);
         state.lyrics = newLyrics;
         state.selectedChar = null;
-        renderSong(); save(); closeEditor();
+        renderSong(); save();
+    }
+    function resetLyrics() {
+        lyricsText.value = state.lyrics;
+        showToast('ĂterstĂ€lld');
     }
 
+    // === Sparning ===
     function save() {
         try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
         catch (e) { console.warn('Kunde inte spara:', e); }
@@ -875,6 +963,7 @@
             const data = JSON.parse(raw);
             if (data && typeof data.lyrics === 'string' && Array.isArray(data.chords)) {
                 state.title = data.title || 'Min lĂ„t';
+                state.artist = data.artist || '';
                 state.lyrics = data.lyrics;
                 state.chords = data.chords;
                 state.key = data.key || 'C';
@@ -885,13 +974,14 @@
         return false;
     }
 
+    // === Bibliotek (File System Access API) ===
     function fsSupported() {
         return typeof window.showDirectoryPicker === 'function';
     }
 
     async function pickLibrary() {
         if (!fsSupported()) {
-            showToast('Mappval krĂ€ver Chrome/Edge via localhost eller HTTPS');
+            showToast('Mappval krĂ€ver Chromium-baserad webblĂ€sare');
             return;
         }
         try {
@@ -912,7 +1002,8 @@
         }
         const names = [];
         for await (const entry of libraryDirHandle.values()) {
-            if (entry.kind === 'file' && entry.name.endsWith('.chordic.json')) {
+            if (entry.kind === 'file' &&
+                (entry.name.endsWith('.chordic.json') || entry.name.endsWith('.pro'))) {
                 names.push(entry.name);
             }
         }
@@ -923,7 +1014,7 @@
         }
         names.forEach(name => {
             const li = document.createElement('li');
-            const display = name.replace(/\.chordic\.json$/, '');
+            const display = name.replace(/\.(chordic\.json|pro)$/i, '');
             li.textContent = display;
             if (name === currentLibraryFile) li.classList.add('active');
             li.addEventListener('click', () => loadFromLibrary(name));
@@ -933,7 +1024,7 @@
 
     async function saveToLibrary() {
         if (!fsSupported()) {
-            showToast('Mappval krĂ€ver Chrome/Edge via localhost eller HTTPS');
+            showToast('Mappval krĂ€ver Chromium-baserad webblĂ€sare');
             return;
         }
         if (!libraryDirHandle) {
@@ -966,8 +1057,12 @@
             const handle = await libraryDirHandle.getFileHandle(fileName);
             const file = await handle.getFile();
             const text = await file.text();
-            const data = JSON.parse(text);
-            applyLoadedSong(data);
+            if (fileName.toLowerCase().endsWith('.pro')) {
+                importChordPro(text, fileName);
+            } else {
+                const data = JSON.parse(text);
+                applyLoadedSong(data);
+            }
             currentLibraryFile = fileName;
             await refreshLibraryList();
             showToast('Ăppnade: ' + fileName);
@@ -980,8 +1075,9 @@
     function serializeSong() {
         return {
             format: 'chordic-lite',
-            version: 1,
+            version: 2,
             title: state.title,
+            artist: state.artist,
             key: state.key,
             lyrics: state.lyrics,
             chords: state.chords
@@ -991,9 +1087,8 @@
     // === ChordPro export ===
     function exportChordPro() {
         let output = '';
-        if (state.title) {
-            output += '{title: ' + state.title + '}\n';
-        }
+        if (state.title)  output += '{title: ' + state.title + '}\n';
+        if (state.artist) output += '{artist: ' + state.artist + '}\n';
         output += '{key: ' + state.key + '}\n';
         output += '\n';
 
@@ -1005,9 +1100,7 @@
             for (let i = 0; i < chars.length; i++) {
                 const chord = state.chords.find(c =>
                     c.line === lineIdx && c.char === i);
-                if (chord) {
-                    resultLine += '[' + chord.chord + ']';
-                }
+                if (chord) resultLine += '[' + chord.chord + ']';
                 resultLine += chars[i];
             }
 
@@ -1040,12 +1133,11 @@
     }
 
     // === ChordPro import ===
-    // LĂ€ser ChordPro-text, bevarar tomma rader (sĂ„ att ackordens radnummer
-    // stĂ€mmer), och tar emot bĂ„de {title:}/{t:} och {key:}/{k:}.
-    function importChordPro(text) {
+    function importChordPro(text, fileName) {
         text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
         const lines = text.split('\n');
         let title = '';
+        let artist = '';
         let key = '';
         const lyricsLines = [];
         const chords = [];
@@ -1054,27 +1146,32 @@
             const titleMatch = line.match(/^\{(?:t|title):\s*(.+?)\s*\}/i);
             if (titleMatch) { title = titleMatch[1].trim(); return; }
 
+            const artistMatch = line.match(/^\{(?:a|artist|subtitle|st):\s*(.+?)\s*\}/i);
+            if (artistMatch) { artist = artistMatch[1].trim(); return; }
+
             const keyMatch = line.match(/^\{(?:key|k):\s*(.+?)\s*\}/i);
             if (keyMatch) { key = keyMatch[1].trim().toUpperCase(); return; }
 
-            // Skippa andra metataggar (men behĂ„ll tomma rader nedan)
             if (line.trim().startsWith('{')) return;
 
-            // Parsa rad med ackord i [hakparenteser]
             let lyricText = '';
             let charPos = 0;
             let i = 0;
+            let lastWasChord = false;
+
             while (i < line.length) {
                 if (line[i] === '[') {
                     const closeBracket = line.indexOf(']', i);
                     if (closeBracket !== -1) {
                         const chordText = line.substring(i + 1, closeBracket).trim();
                         if (chordText) {
+                            if (lastWasChord) charPos++;
                             chords.push({
                                 line: lyricsLines.length,
                                 char: charPos,
                                 chord: chordText
                             });
+                            lastWasChord = true;
                         }
                         i = closeBracket + 1;
                         continue;
@@ -1082,20 +1179,34 @@
                 }
                 lyricText += line[i];
                 charPos++;
+                lastWasChord = false;
                 i++;
             }
 
-            // Pusha ALLTID raden, Ă€ven tomma rader, sĂ„ radnummer hĂ„lls i synk
             lyricsLines.push(lyricText);
         });
 
-        if (title) state.title = title;
+        if ((!title || !artist) && fileName) {
+            const baseName = fileName.replace(/\.(pro|chordpro|crd|cho|chopro|txt)$/i, '');
+            const dashMatch = baseName.match(/^(.+?)\s*[-ââ]\s*(.+)$/);
+            if (dashMatch) {
+                if (!artist) artist = dashMatch[1].trim();
+                if (!title)  title  = dashMatch[2].trim();
+            } else if (!title) {
+                title = baseName;
+            }
+        }
+
+        if (title)  state.title = title;
+        if (artist) state.artist = artist;
         if (key && NOTES_SHARP.indexOf(normalizeRoot(key)) !== -1) state.key = key;
         state.lyrics = lyricsLines.join('\n');
         state.chords = chords;
         state.selectedChar = null;
 
         songTitleInput.value = state.title;
+        songArtistInput.value = state.artist;
+        lyricsText.value = state.lyrics;
         renderSong();
         renderPalette();
         renderKeyboard();
@@ -1120,7 +1231,6 @@
 
     function openFileDialog() { fileInput.click(); }
 
-    // ĂNDRAT: robust detektering av ChordPro vs JSON, oavsett filĂ€ndelse
     fileInput.addEventListener('change', async () => {
         const file = fileInput.files && fileInput.files[0];
         if (!file) return;
@@ -1132,7 +1242,7 @@
             const hasChordBrackets = /\[[^\]]+\]/.test(text);
 
             if (isChordProExt || (!isJsonExt && hasChordBrackets)) {
-                importChordPro(text);
+                importChordPro(text, file.name);
             } else {
                 const data = JSON.parse(text);
                 applyLoadedSong(data);
@@ -1154,31 +1264,26 @@
             return;
         }
         state.title = data.title || 'Min lĂ„t';
+        state.artist = data.artist || '';
         state.lyrics = data.lyrics;
         state.chords = data.chords;
         state.key = data.key || 'C';
         state.selectedChar = null;
         songTitleInput.value = state.title;
+        songArtistInput.value = state.artist;
+        lyricsText.value = state.lyrics;
         renderSong(); renderPalette(); renderKeyboard(); save();
     }
 
     document.addEventListener('keydown', e => {
         if (e.key === 'Escape') {
-            if (editorPanel.classList.contains('visible')) {
-                closeEditor();
-            } else {
-                state.selectedChar = null;
-                renderSong();
-            }
+            state.selectedChar = null;
+            renderSong();
         }
     });
 
     document.getElementById('transDownBtn').addEventListener('click', () => transposeAll(-1));
     document.getElementById('transUpBtn').addEventListener('click', () => transposeAll(1));
-    document.getElementById('editLyricsBtn').addEventListener('click', openEditor);
-    document.getElementById('closeEditorBtn').addEventListener('click', closeEditor);
-    document.getElementById('cancelLyricsBtn').addEventListener('click', closeEditor);
-    document.getElementById('applyLyricsBtn').addEventListener('click', applyLyrics);
     document.getElementById('exportChordProBtn').addEventListener('click', downloadChordPro);
     document.getElementById('importChordProBtn').addEventListener('click', openFileDialog);
     document.getElementById('printBtn').addEventListener('click', () => window.print());
@@ -1191,25 +1296,27 @@
     document.getElementById('saveToLibraryBtn').addEventListener('click', saveToLibrary);
     document.getElementById('openFileBtn').addEventListener('click', openFileDialog);
     document.getElementById('downloadBtn').addEventListener('click', downloadSong);
+    document.getElementById('applyLyricsBtn').addEventListener('click', applyLyrics);
+    document.getElementById('resetLyricsBtn').addEventListener('click', resetLyrics);
 
     songTitleInput.addEventListener('input', () => {
         state.title = songTitleInput.value;
-        save();
+        renderSong(); save();
+    });
+    songArtistInput.addEventListener('input', () => {
+        state.artist = songArtistInput.value;
+        renderSong(); save();
     });
 
-    songEl.addEventListener('click', e => {
-        if (e.target === songEl) {
-            state.selectedChar = null;
-            renderSong();
-        }
+    lyricsText.addEventListener('blur', () => {
+        if (lyricsText.value !== state.lyrics) applyLyrics();
     });
 
+    // === Init ===
     const loaded = load();
-    if (!loaded) {
-        songTitleInput.value = state.title;
-    } else {
-        songTitleInput.value = state.title;
-    }
+    songTitleInput.value = state.title;
+    songArtistInput.value = state.artist;
+    lyricsText.value = state.lyrics;
     renderPalette();
     renderKeyboard();
     renderBuilder();
@@ -1218,6 +1325,10 @@
     if (!fsSupported()) {
         libraryNoteEl.textContent =
             'Din webblĂ€sare stĂ¶djer inte mappval. AnvĂ€nd "Ăppna fil" och "Ladda ner" istĂ€llet.';
+    } else {
+        libraryNoteEl.textContent =
+            'Mappval fungerar i Chromium-baserade webblĂ€sare. ' +
+            'I Firefox och Safari anvĂ€nds nedladdning och filuppladdning istĂ€llet.';
     }
 })();
 </script>
