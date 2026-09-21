@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="sv">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -42,11 +42,26 @@
     .toolbar button:hover { background: #a8d5dd; transform: translateY(-1px); }
     .toolbar button:active { transform: translateY(0); }
 
+    .lang-switch {
+        display: flex; gap: 4px; align-items: center;
+        font-size: 0.8rem; font-weight: bold;
+    }
+    .lang-switch a, .lang-switch span {
+        padding: 5px 12px; border-radius: 20px;
+        text-decoration: none; color: #0d3f4c;
+    }
+    .lang-switch a { background: #d3e9ed; }
+    .lang-switch a:hover { background: #a8d5dd; }
+    .lang-switch .active { background: #1a5f6e; color: #fff; }
+
     .layout {
         display: grid;
-        grid-template-columns: 340px minmax(0, 1fr) 400px;
+        grid-template-columns: 340px minmax(0, 1fr) 500px;
         gap: 12px;
         align-items: start;
+    }
+    @media (min-width: 1600px) {
+        .layout { grid-template-columns: 340px minmax(0, 1fr) 620px; }
     }
     @media (max-width: 1300px) {
         .layout { grid-template-columns: 1fr; }
@@ -212,13 +227,25 @@
         overflow-x: auto; max-width: 210mm; margin: 0 auto; width: 100%;
     }
     .song-header {
-        text-align: center;
+        display: flex;
+        align-items: center;
+        gap: 16px;
         margin: 0 0 30px;
         padding-bottom: 18px;
         border-bottom: 2px solid #e0eef1;
         font-family: 'Segoe UI', Tahoma, sans-serif;
     }
     .song-header.empty { display: none; }
+    .song-header-left { flex: 1 1 0; }
+    .song-header-center { flex: 0 0 auto; text-align: center; }
+    .song-header-right {
+        flex: 1 1 0;
+        text-align: right;
+        font-size: 0.95rem;
+        font-weight: bold;
+        color: #1a5f6e;
+        white-space: nowrap;
+    }
     .song-header .artist {
         font-size: 1rem;
         color: #5c8d96;
@@ -233,6 +260,7 @@
     }
 
     .line { margin-bottom: 14px; min-height: 2em; }
+    .line.blank { min-height: 0.8em; margin-bottom: 8px; }
     .word-wrap { display: inline; white-space: nowrap; }
 
     .char {
@@ -287,10 +315,12 @@
     .editor-panel textarea {
         width: 100%; padding: 12px;
         border: 2px solid #7ec4d0; border-radius: 10px;
-        font-family: 'Courier New', monospace; font-size: 0.9rem;
+        font-family: 'Courier New', monospace; font-size: 0.75rem;
         background: #fff; resize: vertical; color: #0d3f4c;
-        line-height: 1.5;
+        line-height: 1.6;
         min-height: 500px;
+        white-space: pre;
+        overflow-x: auto;
     }
     .editor-panel textarea:focus { outline: none; border-color: #1a6b7c; }
     .editor-panel .editor-buttons { display: flex; justify-content: flex-end; gap: 8px; }
@@ -364,14 +394,18 @@
     <input type="text" class="song-input artist-input" id="songArtist"
            placeholder="Artist..." autocomplete="off" spellcheck="false">
     <input type="text" class="song-input title-input" id="songTitle"
-           placeholder="Låtens namn..." autocomplete="off" spellcheck="false">
+           placeholder="Song title..." autocomplete="off" spellcheck="false">
     <div class="toolbar">
-        <button id="transDownBtn" title="Transponera ner ett halvt steg">−½</button>
-        <button id="transUpBtn" title="Transponera upp ett halvt steg">+½</button>
-        <button id="exportChordProBtn" title="Exportera som ChordPro">📤 ChordPro</button>
-        <button id="importChordProBtn" title="Importera ChordPro-fil">📥 ChordPro</button>
+        <button id="transDownBtn" title="Transpose down one semitone">−½</button>
+        <button id="transUpBtn" title="Transpose up one semitone">+½</button>
+        <button id="exportChordProBtn" title="Export as ChordPro">📤 ChordPro</button>
+        <button id="importChordProBtn" title="Import ChordPro file">📥 ChordPro</button>
         <button id="printBtn">🖨️ PDF</button>
-        <button id="clearChordsBtn">🗑 Rensa ackord</button>
+        <button id="clearChordsBtn">🗑 Clear chords</button>
+    </div>
+    <div class="lang-switch">
+        <span class="active">🇬🇧 EN</span>
+        <a href="index-sv.html" title="Svensk version">🇸🇪 SV</a>
     </div>
 </div>
 
@@ -381,7 +415,7 @@
 
         <div class="panel">
             <div class="key-panel">
-                <span class="key-label">Tonart: <span id="currentKeyLabel">C</span></span>
+                <span class="key-label">Key: <span id="currentKeyLabel">C</span></span>
                 <div class="keyboard" id="keyboard">
                     <div class="white-keys" id="whiteKeys"></div>
                 </div>
@@ -389,27 +423,27 @@
         </div>
 
         <div class="panel">
-            <p class="panel-title">Diatoniska ackord</p>
+            <p class="panel-title">Diatonic chords</p>
             <div class="chord-chips" id="paletteChips"></div>
         </div>
 
         <div class="panel">
-            <p class="panel-title">🛠️ Bygg eget ackord</p>
+            <p class="panel-title">🛠️ Build custom chord</p>
             <div class="builder-row">
-                <span class="builder-row-label">Grundton</span>
+                <span class="builder-row-label">Root</span>
                 <div class="builder-chips" id="builderRoots"></div>
             </div>
             <div class="builder-row">
-                <span class="builder-row-label">Typ</span>
+                <span class="builder-row-label">Type</span>
                 <div class="builder-chips" id="builderQualities"></div>
             </div>
             <div class="builder-row">
-                <span class="builder-row-label">Basnot</span>
+                <span class="builder-row-label">Bass</span>
                 <div class="builder-chips" id="builderBass"></div>
             </div>
             <div class="builder-preview-row">
                 <div class="builder-preview-chip" id="builderPreviewChip">C</div>
-                <button class="builder-add-btn" id="builderAddBtn">Lägg till</button>
+                <button class="builder-add-btn" id="builderAddBtn">Add</button>
             </div>
         </div>
 
@@ -417,9 +451,9 @@
 
     <main class="main">
         <div class="info-bar">
-            🖱️ Dra ackord från palett/byggare till en bokstav &nbsp;|&nbsp;
-            ↔ Dra ett fastsatt ackord för att flytta &nbsp;|&nbsp;
-            <kbd>Ctrl</kbd> + klicka på ett ackord för att ta bort
+            🖱️ Drag a chord from the palette/builder onto a letter &nbsp;|&nbsp;
+            ↔ Drag a placed chord to move it &nbsp;|&nbsp;
+            <kbd>Ctrl</kbd> + click a chord to remove it
         </div>
         <div class="song" id="song">
             <div class="song-header empty" id="songHeader"></div>
@@ -430,25 +464,25 @@
     <aside class="right-column">
 
         <div class="panel editor-panel">
-            <div class="editor-header">✏️ Redigera text</div>
-            <textarea id="lyricsText" spellcheck="false"
-                      placeholder="Skriv eller klistra in låttexten här..."></textarea>
+            <div class="editor-header">✏️ Edit lyrics</div>
+            <textarea id="lyricsText" spellcheck="false" wrap="off"
+                      placeholder="Type or paste the lyrics here..."></textarea>
             <div class="editor-buttons">
-                <button class="cancel" id="resetLyricsBtn">Återställ</button>
-                <button id="applyLyricsBtn">Spara text</button>
+                <button class="cancel" id="resetLyricsBtn">Reset</button>
+                <button id="applyLyricsBtn">Save lyrics</button>
             </div>
         </div>
 
         <div class="panel">
-            <p class="panel-title">📚 Bibliotek</p>
+            <p class="panel-title">📚 Library</p>
             <ul class="library-list" id="libraryList">
-                <li class="empty">Ingen mapp vald</li>
+                <li class="empty">No folder selected</li>
             </ul>
             <div class="library-buttons">
-                <button id="pickLibraryBtn">📁 Välj mapp</button>
-                <button id="saveToLibraryBtn">💾 Spara i mapp</button>
-                <button id="openFileBtn">📂 Öppna fil</button>
-                <button id="downloadBtn">⬇ Ladda ner</button>
+                <button id="pickLibraryBtn">📁 Choose folder</button>
+                <button id="saveToLibraryBtn">💾 Save to folder</button>
+                <button id="openFileBtn">📂 Open file</button>
+                <button id="downloadBtn">⬇ Download</button>
             </div>
             <p class="library-note" id="libraryNote"></p>
         </div>
@@ -461,7 +495,7 @@
     <div class="confirm-box">
         <p id="confirmMessage"></p>
         <div class="confirm-buttons">
-            <button class="confirm-no" id="confirmNoBtn">Avbryt</button>
+            <button class="confirm-no" id="confirmNoBtn">Cancel</button>
             <button class="confirm-yes" id="confirmYesBtn">OK</button>
         </div>
     </div>
@@ -476,12 +510,12 @@
 (function() {
     'use strict';
 
-    const STORAGE_KEY = 'chordic_lite_v5';
+    const STORAGE_KEY = 'chordic_lite_en_v5';
     const NOTES_SHARP = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
     const MAJOR_INTERVALS = [0, 2, 4, 5, 7, 9, 11];
     const CHORD_QUALITIES = ['', 'm', 'm', '', '', 'm', 'dim'];
     const BUILDER_QUALITIES = [
-        { label: 'dur',  value: '' },
+        { label: 'maj',  value: '' },
         { label: 'm',    value: 'm' },
         { label: '7',    value: '7' },
         { label: 'm7',   value: 'm7' },
@@ -510,8 +544,9 @@
         "Was blind but now I see";
 
     let state = {
-        title: 'Min låt',
+        title: 'My song',
         artist: '',
+        intro: [],
         lyrics: DEFAULT_LYRICS,
         chords: [],
         key: 'C',
@@ -677,7 +712,7 @@
                 if (state.selectedChar) {
                     addChord(state.selectedChar.line, state.selectedChar.char, chord);
                 } else {
-                    showToast('Klicka på en bokstav i texten först');
+                    showToast('Click a letter in the lyrics first');
                 }
             });
             paletteChips.appendChild(chip);
@@ -733,7 +768,7 @@
         const noneChip = document.createElement('button');
         noneChip.type = 'button';
         noneChip.className = 'mini-chip none-chip' + (builder.bass === null ? ' active' : '');
-        noneChip.textContent = 'ingen';
+        noneChip.textContent = 'none';
         noneChip.addEventListener('click', () => { builder.bass = null; renderBuilder(); });
         builderBassEl.appendChild(noneChip);
         NOTES_SHARP.forEach(note => {
@@ -752,33 +787,58 @@
     });
     builderAddBtn.addEventListener('click', () => {
         if (!state.selectedChar) {
-            showToast('Klicka på en bokstav i texten först!');
+            showToast('Click a letter in the lyrics first!');
             return;
         }
         addChord(state.selectedChar.line, state.selectedChar.char, composedChordText());
     });
 
     function renderSong() {
-        if (state.title || state.artist) {
-            songHeaderEl.classList.remove('empty');
-            songHeaderEl.innerHTML = '';
-            if (state.artist) {
-                const artistEl = document.createElement('div');
-                artistEl.className = 'artist';
-                artistEl.textContent = state.artist;
-                songHeaderEl.appendChild(artistEl);
-            }
-            if (state.title) {
-                const titleEl = document.createElement('div');
-                titleEl.className = 'title';
-                titleEl.textContent = state.title;
-                songHeaderEl.appendChild(titleEl);
-            }
-        } else {
+        renderHeader();
+        renderLyrics();
+    }
+
+    function renderHeader() {
+        const hasInfo = state.title || state.artist;
+        const hasIntro = Array.isArray(state.intro) && state.intro.length > 0;
+
+        if (!hasInfo && !hasIntro) {
             songHeaderEl.classList.add('empty');
             songHeaderEl.innerHTML = '';
+            return;
         }
+        songHeaderEl.classList.remove('empty');
+        songHeaderEl.innerHTML = '';
 
+        const left = document.createElement('div');
+        left.className = 'song-header-left';
+        songHeaderEl.appendChild(left);
+
+        const center = document.createElement('div');
+        center.className = 'song-header-center';
+        if (state.artist) {
+            const artistEl = document.createElement('div');
+            artistEl.className = 'artist';
+            artistEl.textContent = state.artist;
+            center.appendChild(artistEl);
+        }
+        if (state.title) {
+            const titleEl = document.createElement('div');
+            titleEl.className = 'title';
+            titleEl.textContent = state.title;
+            center.appendChild(titleEl);
+        }
+        songHeaderEl.appendChild(center);
+
+        const right = document.createElement('div');
+        right.className = 'song-header-right';
+        if (hasIntro) {
+            right.textContent = state.intro.join('  ');
+        }
+        songHeaderEl.appendChild(right);
+    }
+
+    function renderLyrics() {
         songEl.innerHTML = '';
         const lines = state.lyrics.split('\n');
         lines.forEach((lineText, lineIdx) => {
@@ -823,7 +883,7 @@
                         const chordEl = document.createElement('span');
                         chordEl.className = 'chord';
                         chordEl.textContent = chord.chord;
-                        chordEl.title = 'Dra för att flytta, Ctrl+klick för att ta bort';
+                        chordEl.title = 'Drag to move, Ctrl+click to remove';
                         chordEl.addEventListener('pointerdown', e => {
                             e.stopPropagation();
                             startDrag(e, chordEl, () => chord.chord, (newLine, newChar) => {
@@ -866,7 +926,7 @@
                 const chordEl = document.createElement('span');
                 chordEl.className = 'chord';
                 chordEl.textContent = chord.chord;
-                chordEl.title = 'Dra för att flytta, Ctrl+klick för att ta bort';
+                chordEl.title = 'Drag to move, Ctrl+click to remove';
                 chordEl.addEventListener('pointerdown', e => {
                     e.stopPropagation();
                     startDrag(e, chordEl, () => chord.chord, (newLine, newChar) => {
@@ -884,7 +944,7 @@
             });
 
             if (lineText === '' && lineEl.children.length === 0) {
-                lineEl.innerHTML = '&nbsp;';
+                lineEl.classList.add('blank');
             }
             songEl.appendChild(lineEl);
         });
@@ -917,6 +977,7 @@
     function transposeAll(semitones) {
         state.chords = state.chords.map(c =>
             ({ ...c, chord: transposeChord(c.chord, semitones) }));
+        state.intro = state.intro.map(c => transposeChord(c, semitones));
         const idx = NOTES_SHARP.indexOf(normalizeRoot(state.key));
         if (idx !== -1) {
             state.key = NOTES_SHARP[((idx + semitones) % 12 + 12) % 12];
@@ -925,21 +986,71 @@
     }
 
     function applyLyrics() {
-        const newLyrics = lyricsText.value;
-        const lineCount = newLyrics.split('\n').length;
-        state.chords = state.chords.filter(c => c.line < lineCount);
-        state.lyrics = newLyrics;
+        const oldText = state.lyrics;
+        const newText = lyricsText.value;
+        if (oldText === newText) return;
+
+        function lineCharToFlat(text, targetLine, targetChar) {
+            let line = 0, ch = 0, flat = 0;
+            for (let i = 0; i < text.length; i++) {
+                if (line === targetLine && ch === targetChar) return flat;
+                if (text[i] === '\n') { line++; ch = 0; }
+                else ch++;
+                flat++;
+            }
+            return flat;
+        }
+        function flatToLineChar(text, flat) {
+            let line = 0, ch = 0;
+            for (let i = 0; i < flat && i < text.length; i++) {
+                if (text[i] === '\n') { line++; ch = 0; }
+                else ch++;
+            }
+            return { line, char: ch };
+        }
+
+        let prefix = 0;
+        const minLen = Math.min(oldText.length, newText.length);
+        while (prefix < minLen && oldText[prefix] === newText[prefix]) prefix++;
+
+        let suffix = 0;
+        while (suffix < oldText.length - prefix && suffix < newText.length - prefix &&
+               oldText[oldText.length - 1 - suffix] === newText[newText.length - 1 - suffix]) {
+            suffix++;
+        }
+
+        const oldChangeEnd = oldText.length - suffix;
+        const newChangeEnd = newText.length - suffix;
+        const delta = newChangeEnd - oldChangeEnd;
+
+        const newChords = [];
+        for (const c of state.chords) {
+            const oldFlat = lineCharToFlat(oldText, c.line, c.char);
+            let newFlat;
+            if (oldFlat <= prefix) {
+                newFlat = oldFlat;
+            } else if (oldFlat >= oldChangeEnd) {
+                newFlat = oldFlat + delta;
+            } else {
+                continue;
+            }
+            const { line, char } = flatToLineChar(newText, newFlat);
+            newChords.push({ line, char, chord: c.chord });
+        }
+
+        state.lyrics = newText;
+        state.chords = newChords;
         state.selectedChar = null;
         renderSong(); save();
     }
     function resetLyrics() {
         lyricsText.value = state.lyrics;
-        showToast('Återställd');
+        showToast('Reset');
     }
 
     function save() {
         try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-        catch (e) { console.warn('Kunde inte spara:', e); }
+        catch (e) { console.warn('Could not save:', e); }
     }
     function load() {
         try {
@@ -947,15 +1058,16 @@
             if (!raw) return false;
             const data = JSON.parse(raw);
             if (data && typeof data.lyrics === 'string' && Array.isArray(data.chords)) {
-                state.title = data.title || 'Min låt';
+                state.title = data.title || 'My song';
                 state.artist = data.artist || '';
+                state.intro = Array.isArray(data.intro) ? data.intro : [];
                 state.lyrics = data.lyrics;
                 state.chords = data.chords;
                 state.key = data.key || 'C';
                 state.selectedChar = null;
                 return true;
             }
-        } catch (e) { console.warn('Kunde inte läsa:', e); }
+        } catch (e) { console.warn('Could not read:', e); }
         return false;
     }
 
@@ -965,14 +1077,14 @@
 
     async function pickLibrary() {
         if (!fsSupported()) {
-            showToast('Mappval kräver Chromium-baserad webbläsare');
+            showToast('Folder picker requires a Chromium-based browser');
             return;
         }
         try {
             libraryDirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
             currentLibraryFile = null;
             await refreshLibraryList();
-            showToast('Mapp vald');
+            showToast('Folder selected');
         } catch (e) {
             if (e.name !== 'AbortError') console.warn(e);
         }
@@ -981,7 +1093,7 @@
     async function refreshLibraryList() {
         libraryListEl.innerHTML = '';
         if (!libraryDirHandle) {
-            libraryListEl.innerHTML = '<li class="empty">Ingen mapp vald</li>';
+            libraryListEl.innerHTML = '<li class="empty">No folder selected</li>';
             return;
         }
         const names = [];
@@ -993,7 +1105,7 @@
         }
         names.sort();
         if (names.length === 0) {
-            libraryListEl.innerHTML = '<li class="empty">Inga låtar i mappen</li>';
+            libraryListEl.innerHTML = '<li class="empty">No songs in this folder</li>';
             return;
         }
         names.forEach(name => {
@@ -1008,14 +1120,14 @@
 
     async function saveToLibrary() {
         if (!fsSupported()) {
-            showToast('Mappval kräver Chromium-baserad webbläsare');
+            showToast('Folder picker requires a Chromium-based browser');
             return;
         }
         if (!libraryDirHandle) {
             await pickLibrary();
             if (!libraryDirHandle) return;
         }
-        const name = prompt('Filnamn:', state.title || 'Min låt');
+        const name = prompt('Filename:', state.title || 'My song');
         if (!name) return;
         const fileName = name.trim().replace(/[\\/:*?"<>|]/g, '_') + '.chordic.json';
         try {
@@ -1028,10 +1140,10 @@
             songTitleInput.value = state.title;
             save();
             await refreshLibraryList();
-            showToast('Sparat: ' + fileName);
+            showToast('Saved: ' + fileName);
         } catch (e) {
             console.warn(e);
-            showToast('Kunde inte spara filen');
+            showToast('Could not save the file');
         }
     }
 
@@ -1049,20 +1161,21 @@
             }
             currentLibraryFile = fileName;
             await refreshLibraryList();
-            showToast('Öppnade: ' + fileName);
+            showToast('Opened: ' + fileName);
         } catch (e) {
             console.warn(e);
-            showToast('Kunde inte läsa filen');
+            showToast('Could not read the file');
         }
     }
 
     function serializeSong() {
         return {
             format: 'chordic-lite',
-            version: 2,
+            version: 3,
             title: state.title,
             artist: state.artist,
             key: state.key,
+            intro: state.intro,
             lyrics: state.lyrics,
             chords: state.chords
         };
@@ -1074,6 +1187,11 @@
         if (state.artist) output += '{artist: ' + state.artist + '}\n';
         output += '{key: ' + state.key + '}\n';
         output += '\n';
+
+        if (Array.isArray(state.intro) && state.intro.length > 0) {
+            output += state.intro.map(c => '[' + c + ']').join('') + '\n';
+            output += '\n';
+        }
 
         const lines = state.lyrics.split('\n');
         lines.forEach((lineText, lineIdx) => {
@@ -1105,22 +1223,16 @@
         const blob = new Blob([chordProText], { type: 'text/plain;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        const safeName = (state.title || 'min-lat').replace(/[\\/:*?"<>|]/g, '_');
+        const safeName = (state.title || 'my-song').replace(/[\\/:*?"<>|]/g, '_');
         a.href = url;
         a.download = safeName + '.pro';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        showToast('ChordPro-fil nedladdad');
+        showToast('ChordPro file downloaded');
     }
 
-    // === ChordPro import ===
-    // Tvåstegs-parsning:
-    // 1. Dela upp varje rad i { text, chords[] }
-    // 2. Slå ihop intilliggande ackord-rader (rader utan lyrik men med ackord)
-    //    till en gemensam rad — det är så ChordPro-standarden förväntar sig
-    //    att en intro-slinga skrivs på flera rader.
     function importChordPro(text, fileName) {
         text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
         const lines = text.split('\n');
@@ -1128,7 +1240,6 @@
         let artist = '';
         let key = '';
 
-        // --- Steg 1: parsa varje rad ---
         const parsedLines = [];
         for (const line of lines) {
             const titleMatch = line.match(/^\{(?:t|title):\s*(.+?)\s*\}/i);
@@ -1170,7 +1281,6 @@
             parsedLines.push({ text: lyricText, chords: chordsOnLine });
         }
 
-        // --- Steg 2: slå ihop intilliggande ackord-rader ---
         const mergedLines = [];
         let idx = 0;
         while (idx < parsedLines.length) {
@@ -1201,16 +1311,27 @@
             }
         }
 
-        // --- Bygg state ---
-        const lyricsLines = mergedLines.map(l => l.text);
+        const introChords = [];
+        let firstLyricIdx = 0;
+        for (let i = 0; i < mergedLines.length; i++) {
+            const l = mergedLines[i];
+            if (l.text.trim() === '') {
+                l.chords.forEach(c => introChords.push(c.chord));
+                firstLyricIdx = i + 1;
+            } else {
+                break;
+            }
+        }
+
+        const lyricLines = mergedLines.slice(firstLyricIdx);
+        const lyricsLines = lyricLines.map(l => l.text);
         const chords = [];
-        mergedLines.forEach((l, lineIdx) => {
+        lyricLines.forEach((l, lineIdx) => {
             l.chords.forEach(c => {
                 chords.push({ line: lineIdx, char: c.char, chord: c.chord });
             });
         });
 
-        // Fallback: använd filnamnet "Artist - Titel" om ChordPro saknade info
         if ((!title || !artist) && fileName) {
             const baseName = fileName.replace(/\.(pro|chordpro|crd|cho|chopro|txt)$/i, '');
             const dashMatch = baseName.match(/^(.+?)\s*[-–—]\s*(.+)$/);
@@ -1225,6 +1346,7 @@
         if (title)  state.title = title;
         if (artist) state.artist = artist;
         if (key && NOTES_SHARP.indexOf(normalizeRoot(key)) !== -1) state.key = key;
+        state.intro = introChords;
         state.lyrics = lyricsLines.join('\n');
         state.chords = chords;
         state.selectedChar = null;
@@ -1236,7 +1358,7 @@
         renderPalette();
         renderKeyboard();
         save();
-        showToast('ChordPro-fil importerad');
+        showToast('ChordPro file imported');
     }
 
     function downloadSong() {
@@ -1244,14 +1366,14 @@
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        const safeName = (state.title || 'min-lat').replace(/[\\/:*?"<>|]/g, '_');
+        const safeName = (state.title || 'my-song').replace(/[\\/:*?"<>|]/g, '_');
         a.href = url;
         a.download = safeName + '.chordic.json';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        showToast('Nedladdad');
+        showToast('Downloaded');
     }
 
     function openFileDialog() { fileInput.click(); }
@@ -1274,10 +1396,10 @@
             }
 
             currentLibraryFile = fsSupported() && libraryDirHandle ? file.name : null;
-            showToast('Öppnade: ' + file.name);
+            showToast('Opened: ' + file.name);
         } catch (e) {
             console.warn(e);
-            showToast('Kunde inte läsa filen');
+            showToast('Could not read the file');
         } finally {
             fileInput.value = '';
         }
@@ -1285,11 +1407,12 @@
 
     function applyLoadedSong(data) {
         if (!data || typeof data.lyrics !== 'string' || !Array.isArray(data.chords)) {
-            showToast('Filen är inte en Chordic-låt');
+            showToast('File is not a Chordic song');
             return;
         }
-        state.title = data.title || 'Min låt';
+        state.title = data.title || 'My song';
         state.artist = data.artist || '';
+        state.intro = Array.isArray(data.intro) ? data.intro : [];
         state.lyrics = data.lyrics;
         state.chords = data.chords;
         state.key = data.key || 'C';
@@ -1313,7 +1436,7 @@
     document.getElementById('importChordProBtn').addEventListener('click', openFileDialog);
     document.getElementById('printBtn').addEventListener('click', () => window.print());
     document.getElementById('clearChordsBtn').addEventListener('click', async () => {
-        const ok = await showConfirm('Rensa alla ackord?');
+        const ok = await showConfirm('Clear all chords?');
         if (!ok) return;
         state.chords = []; renderSong(); save();
     });
@@ -1348,11 +1471,12 @@
 
     if (!fsSupported()) {
         libraryNoteEl.textContent =
-            'Din webbläsare stödjer inte mappval. Använd "Öppna fil" och "Ladda ner" istället.';
+            'Your browser does not support folder picking. ' +
+            'Use "Open file" and "Download" instead.';
     } else {
         libraryNoteEl.textContent =
-            'Mappval fungerar i Chromium-baserade webbläsare. ' +
-            'I Firefox och Safari används nedladdning och filuppladdning istället.';
+            'Folder picking works in Chromium-based browsers. ' +
+            'In Firefox and Safari, download and file upload are used instead.';
     }
 })();
 </script>
