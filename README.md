@@ -88,25 +88,15 @@ page is opened.
 
 ## Roadmap / ideas
 
-- □ 
+- □   Undo / redo
 
-  Undo / redo
+- □   Verse / chorus / bridge markers with repeat
 
-- □ 
+- □   Multiple chord rows per line (two-voice arrangements)
 
-  Verse / chorus / bridge markers with repeat
+- □   Custom chord palette per song
 
-- □ 
-
-  Multiple chord rows per line (two-voice arrangements)
-
-- □ 
-
-  Custom chord palette per song
-
-- □ 
-
-  Keyboard navigation (arrow keys to move selection, Tab between chords)
+- □   Keyboard navigation (arrow keys to move selection, Tab between chords)
 
 If you'd like to help with any of these, open an issue or a PR.
 
