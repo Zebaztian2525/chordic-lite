@@ -41,11 +41,11 @@
 
     .layout {
         display: grid;
-        grid-template-columns: 340px minmax(0, 1fr);
+        grid-template-columns: 340px minmax(0, 1fr) 380px;
         gap: 12px;
         align-items: start;
     }
-    @media (max-width: 900px) {
+    @media (max-width: 1200px) {
         .layout { grid-template-columns: 1fr; }
     }
 
@@ -170,12 +170,12 @@
     }
 
     .song {
-        background: #f0fafc; border: 3px solid #7ec4d0;
+        background: #fff; border: 3px solid #7ec4d0;
         border-radius: 16px; padding: 24px 28px;
         font-family: 'Courier New', monospace; font-size: 1rem;
-        line-height: 1.2; min-height: 300px;
+        line-height: 1.2; min-height: 600px;
         box-shadow: 0 10px 24px rgba(0,0,0,0.3); color: #0d3f4c;
-        overflow-x: auto;
+        overflow-x: auto; max-width: 210mm; margin: 0 auto;
     }
     .line { margin-bottom: 14px; min-height: 2em; }
     .word-wrap { display: inline; white-space: nowrap; }
@@ -215,46 +215,32 @@
     .char .chord.dragging { opacity: 0.35; cursor: default; }
 
     .editor-panel {
-        position: fixed;
-        top: 14px; right: 14px; bottom: 14px;
-        width: 400px; max-width: calc(100vw - 28px);
-        background: #f0fafc;
-        border: 3px solid #7ec4d0;
-        border-radius: 16px;
-        box-shadow: -12px 0 32px rgba(0,0,0,0.4);
-        display: none;
-        flex-direction: column; gap: 10px;
-        padding: 16px; z-index: 100;
-        animation: slideIn 0.18s ease-out;
+        display: flex; flex-direction: column; gap: 10px;
+        padding: 14px 16px;
     }
-    @keyframes slideIn {
-        from { transform: translateX(20px); opacity: 0; }
-        to   { transform: translateX(0); opacity: 1; }
-    }
-    .editor-panel.visible { display: flex; }
     .editor-panel .editor-header {
         display: flex; justify-content: space-between; align-items: center;
-        font-weight: bold; color: #0d3f4c; font-size: 1rem;
+        font-weight: bold; color: #0d3f4c; font-size: 0.9rem;
     }
     .editor-panel .editor-header button {
         background: transparent; border: none;
-        font-size: 1.6rem; cursor: default; color: #5c8d96;
+        font-size: 1.4rem; cursor: default; color: #5c8d96;
         line-height: 1; padding: 0 6px; border-radius: 6px;
     }
     .editor-panel .editor-header button:hover { color: #0d3f4c; background: #d3e9ed; }
     .editor-panel textarea {
-        flex: 1; width: 100%; padding: 12px;
+        width: 100%; padding: 10px;
         border: 2px solid #7ec4d0; border-radius: 10px;
-        font-family: 'Courier New', monospace; font-size: 0.95rem;
-        background: #fff; resize: none; color: #0d3f4c;
-        line-height: 1.4;
+        font-family: 'Courier New', monospace; font-size: 0.9rem;
+        background: #fff; resize: vertical; color: #0d3f4c;
+        line-height: 1.4; min-height: 120px;
     }
     .editor-panel textarea:focus { outline: none; border-color: #1a6b7c; }
     .editor-panel .editor-buttons { display: flex; justify-content: flex-end; gap: 8px; }
     .editor-panel .editor-buttons button {
         background: #1a5f6e; color: #fff; border: none;
-        border-radius: 20px; padding: 8px 20px;
-        font-weight: bold; cursor: default; font-size: 0.9rem;
+        border-radius: 20px; padding: 6px 16px;
+        font-weight: bold; cursor: default; font-size: 0.85rem;
     }
     .editor-panel .editor-buttons button.cancel { background: #5c8d96; }
     .editor-panel .editor-buttons button:hover { filter: brightness(0.9); }
@@ -308,7 +294,7 @@
 
     @media print {
         body { background: #fff; padding: 0; }
-        .topbar, .sidebar, .info, .editor-panel,
+        .topbar, .sidebar, .info,
         .confirm-overlay, .toast { display: none !important; }
         .layout { display: block; }
         .song {
@@ -330,6 +316,8 @@
         <button id="transDownBtn" title="Transponera ner ett halvt steg">−½</button>
         <button id="transUpBtn" title="Transponera upp ett halvt steg">+½</button>
         <button id="editLyricsBtn">✏️ Text</button>
+        <button id="exportChordProBtn" title="Exportera som ChordPro">📤 ChordPro</button>
+        <button id="importChordProBtn" title="Importera ChordPro-fil">📥 ChordPro</button>
         <button id="printBtn">🖨️ PDF</button>
         <button id="clearChordsBtn">🗑 Rensa ackord</button>
     </div>
@@ -396,20 +384,20 @@
         <div class="song" id="song"></div>
     </main>
 
-</div>
+    <aside class="editor-panel" id="editorPanel">
+        <div class="editor-header">
+            <span>✏️ Redigera text</span>
+            <button id="closeEditorBtn" title="Stäng">×</button>
+        </div>
+        <textarea id="lyricsText" spellcheck="false"
+                  placeholder="Skriv eller klistra in låttexten här..."></textarea>
+        <div class="editor-buttons">
+            <button class="cancel" id="cancelLyricsBtn">Avbryt</button>
+            <button id="applyLyricsBtn">Spara text</button>
+        </div>
+    </aside>
 
-<aside class="editor-panel" id="editorPanel">
-    <div class="editor-header">
-        <span>✏️ Redigera text</span>
-        <button id="closeEditorBtn" title="Stäng">×</button>
-    </div>
-    <textarea id="lyricsText" spellcheck="false"
-              placeholder="Skriv eller klistra in låttexten här..."></textarea>
-    <div class="editor-buttons">
-        <button class="cancel" id="cancelLyricsBtn">Avbryt</button>
-        <button id="applyLyricsBtn">Spara text</button>
-    </div>
-</aside>
+</div>
 
 <div class="confirm-overlay" id="confirmOverlay">
     <div class="confirm-box">
@@ -721,6 +709,11 @@
             const lineEl = document.createElement('div');
             lineEl.className = 'line';
             const chars = Array.from(lineText);
+            
+            // Render chords that are placed after the last character of this line
+            const endChords = state.chords.filter(c => 
+                c.line === lineIdx && c.char >= chars.length);
+            
             let charIdx = 0, i = 0;
             while (i < chars.length) {
                 const isSpace = /\s/.test(chars[i]);
@@ -775,6 +768,47 @@
                 lineEl.appendChild(wrap);
                 i = j;
             }
+            
+            // Add extra positions at end of line for chords placed after last character
+            endChords.forEach(chord => {
+                const charEl = document.createElement('span');
+                charEl.className = 'char';
+                charEl.dataset.line = lineIdx;
+                charEl.dataset.char = chord.char;
+                
+                if (state.selectedChar &&
+                    state.selectedChar.line === lineIdx &&
+                    state.selectedChar.char === chord.char) {
+                    charEl.classList.add('selected');
+                }
+                
+                const lyricEl = document.createElement('span');
+                lyricEl.className = 'lyric';
+                lyricEl.textContent = '\u00A0';
+                lyricEl.style.visibility = 'hidden';
+                lyricEl.addEventListener('click', () => selectChar(lineIdx, chord.char));
+                charEl.appendChild(lyricEl);
+                
+                const chordEl = document.createElement('span');
+                chordEl.className = 'chord';
+                chordEl.textContent = chord.chord;
+                chordEl.title = 'Dra för att flytta, Ctrl+klick för att ta bort';
+                chordEl.addEventListener('pointerdown', e => {
+                    e.stopPropagation();
+                    startDrag(e, chordEl, () => chord.chord, (newLine, newChar) => {
+                        moveChord(lineIdx, chord.char, newLine, newChar, chord.chord);
+                    });
+                });
+                chordEl.addEventListener('click', e => {
+                    e.stopPropagation();
+                    if (e.ctrlKey || e.metaKey) removeChord(lineIdx, chord.char);
+                    else selectChar(lineIdx, chord.char);
+                });
+                charEl.appendChild(chordEl);
+                
+                lineEl.appendChild(charEl);
+            });
+            
             if (lineText === '') lineEl.innerHTML = '&nbsp;';
             songEl.appendChild(lineEl);
         });
@@ -822,8 +856,9 @@
     function applyLyrics() {
         const newLyrics = lyricsText.value;
         const lineLengths = newLyrics.split('\n').map(l => Array.from(l).length);
+        // Keep chords that are on valid lines and either on valid char positions or at/after end of line
         state.chords = state.chords.filter(c =>
-            c.line < lineLengths.length && c.char < lineLengths[c.line]);
+            c.line < lineLengths.length && (c.char < lineLengths[c.line] || c.char >= 0));
         state.lyrics = newLyrics;
         state.selectedChar = null;
         renderSong(); save(); closeEditor();
@@ -953,6 +988,127 @@
         };
     }
 
+    // ChordPro export function
+    function exportChordPro() {
+        let output = '';
+        if (state.title) {
+            output += '{title: ' + state.title + '}\n';
+        }
+        if (state.key && state.key !== 'C') {
+            output += '{key: ' + state.key + '}\n';
+        }
+        output += '\n';
+        
+        const lines = state.lyrics.split('\n');
+        lines.forEach((lineText, lineIdx) => {
+            let resultLine = '';
+            const chars = Array.from(lineText);
+            let charIdx = 0;
+            
+            for (let i = 0; i < chars.length; i++) {
+                const chord = state.chords.find(c => c.line === lineIdx && c.char === i);
+                if (chord) {
+                    resultLine += '[' + chord.chord + ']';
+                }
+                resultLine += chars[i];
+            }
+            
+            // Add chords after the last character of the line
+            const endChords = state.chords.filter(c => 
+                c.line === lineIdx && c.char >= chars.length);
+            if (endChords.length > 0) {
+                endChords.sort((a, b) => a.char - b.char);
+                endChords.forEach(chord => {
+                    resultLine += '[' + chord.chord + ']';
+                });
+            }
+            
+            output += resultLine + '\n';
+        });
+        
+        return output;
+    }
+
+    function downloadChordPro() {
+        const chordProText = exportChordPro();
+        const blob = new Blob([chordProText], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        const safeName = (state.title || 'min-lat').replace(/[\\/:*?"<>|]/g, '_');
+        a.href = url;
+        a.download = safeName + '.pro';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('ChordPro-fil nedladdad');
+    }
+
+    // ChordPro import function
+    function importChordPro(text) {
+        const lines = text.split('\n');
+        let title = '';
+        let key = 'C';
+        let lyricsLines = [];
+        let chords = [];
+        
+        lines.forEach(line => {
+            // Check for metadata tags like {title: ...} or {key: ...}
+            const titleMatch = line.match(/^\{title:\s*(.+?)\}/i);
+            if (titleMatch) {
+                title = titleMatch[1].trim();
+                return;
+            }
+            const keyMatch = line.match(/^\{key:\s*(.+?)\}/i);
+            if (keyMatch) {
+                key = keyMatch[1].trim().toUpperCase();
+                return;
+            }
+            // Skip other metadata tags and empty comment lines
+            if (line.trim().startsWith('{') || line.trim() === '') {
+                return;
+            }
+            
+            // Parse line with chords in [brackets]
+            let lyricText = '';
+            let charPos = 0;
+            let i = 0;
+            while (i < line.length) {
+                if (line[i] === '[') {
+                    // Found a chord
+                    const closeBracket = line.indexOf(']', i);
+                    if (closeBracket !== -1) {
+                        const chordText = line.substring(i + 1, closeBracket);
+                        chords.push({ line: lyricsLines.length, char: charPos, chord: chordText });
+                        i = closeBracket + 1;
+                        continue;
+                    }
+                }
+                lyricText += line[i];
+                charPos++;
+                i++;
+            }
+            
+            if (lyricText.trim() !== '' || line.trim() !== '') {
+                lyricsLines.push(lyricText);
+            }
+        });
+        
+        state.title = title || state.title;
+        state.key = key || state.key;
+        state.lyrics = lyricsLines.join('\n');
+        state.chords = chords;
+        state.selectedChar = null;
+        
+        songTitleInput.value = state.title;
+        currentKeyLabel.textContent = state.key;
+        renderSong();
+        renderPalette();
+        renderKeyboard();
+        save();
+        showToast('ChordPro-fil importerad');
+    }
+
     function downloadSong() {
         const data = serializeSong();
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -974,8 +1130,15 @@
         if (!file) return;
         try {
             const text = await file.text();
-            const data = JSON.parse(text);
-            applyLoadedSong(data);
+            
+            // Check if it's a ChordPro file (.pro or contains ChordPro syntax)
+            if (file.name.endsWith('.pro') || (text.includes('[') && text.includes(']'))) {
+                importChordPro(text);
+            } else {
+                const data = JSON.parse(text);
+                applyLoadedSong(data);
+            }
+            
             currentLibraryFile = fsSupported() && libraryDirHandle ? file.name : null;
             showToast('Öppnade: ' + file.name);
         } catch (e) {
@@ -1017,6 +1180,8 @@
     document.getElementById('closeEditorBtn').addEventListener('click', closeEditor);
     document.getElementById('cancelLyricsBtn').addEventListener('click', closeEditor);
     document.getElementById('applyLyricsBtn').addEventListener('click', applyLyrics);
+    document.getElementById('exportChordProBtn').addEventListener('click', downloadChordPro);
+    document.getElementById('importChordProBtn').addEventListener('click', openFileDialog);
     document.getElementById('printBtn').addEventListener('click', () => window.print());
     document.getElementById('clearChordsBtn').addEventListener('click', async () => {
         const ok = await showConfirm('Rensa alla ackord?');
