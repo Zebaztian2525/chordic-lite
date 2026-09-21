@@ -1,154 +1,145 @@
 # 🎵 Chordic Lite
 
-**[▶ Testa direkt i webbläsaren](https://zebaztian2525.github.io/chordic-lite/)** — ingen installation krävs.
+**[▶ Try it live in your browser](https://zebaztian2525.github.io/chordic-lite/)** — no installation required.
 
-Ett litet, webbläsarbaserat ackordprogram för låtskrivare, kyrkomusiker och
-alla som vill placera ackord exakt där de hör hemma — rakt ovanför den
-stavelse som bär betoningen.
+**🌍 Languages:** English (default) · [Svenska](https://zebaztian2525.github.io/chordic-lite/index-sv.html)
 
-Chordic Lite körs helt och hållet i webbläsaren. Ingen server, ingen
-installation, inget konto. Öppna bara filen och börja skriva.
+A small, browser-based chord editor for songwriters, church musicians, and
+anyone who wants to place chords exactly where they belong — right above the
+syllable that carries the beat.
 
-> **Status:** tidig prototyp. Feedback och pull requests är varmt välkomna.
+Chordic Lite runs entirely in your browser. No server, no install, no account.
+Just open it and start typing.
 
-*Programmet är på svenska. Den som vill ha en engelsk version får gärna
-forka repot och översätta — det uppskattas.*
-
----
-
-## Funktioner
-
-- **Skriv låttext och placera ackord ovanför enskilda bokstäver.** Varje
-  tecken i texten är en egen drop-zon, så du kan sätta tre ackord över
-  "Amazing" — ett för varje betonad vokal — eller lägga ett ackord i
-  mellanrummet mellan två ord.
-- **Dra och släpp-ackord** från en palett med diatoniska ackord i vald tonart.
-- **Bygg egna ackord** — grundton, typ (m, 7, maj7, sus4, dim…) och
-  basnot. Dra resultatet till en bokstav, eller markera en bokstav och
-  tryck "Lägg till".
-- **Pianoklaviatur** för att välja tonart. Paletten uppdateras automatiskt
-  till skalans ackord.
-- **Transponera** hela låten upp eller ner ett halvt steg i taget.
-  Både ackordsymbolerna och den valda tonarten flyttas med.
-- **Spara och ladda** låtar som `.chordic.json`-filer.
-  - I Chrome, Edge, Vivaldi, Brave, Opera och andra Chromium-baserade
-    webbläsare kan du peka ut en mapp en gång och få ett riktigt
-    bibliotek — låtar sparas och laddas direkt från disken. Detta
-    fungerar oftast även när du öppnar filen direkt från datorn
-    (`file://`).
-  - I Firefox och Safari krävs att sidan körs över HTTPS eller
-    `localhost` för mappbiblioteket. Där faller Chordic Lite istället
-    tillbaka på nedladdning och filuppladdning.
-- **Skriv ut till PDF** — gränssnittet göms automatiskt i utskriftsmallen.
-- **Sparar automatiskt** aktuell låt i `localStorage`, så inget tappas
-  vid en omladdning.
+> **Status:** early prototype. Feedback and pull requests are very welcome.
 
 ---
 
-## Komma igång
+## Features
 
-**Snabbast:** öppna [livedemon](https://zebaztian2525.github.io/chordic-lite/)
-i valfri modern webbläsare.
+- **Write lyrics, place chords above individual letters.** Every character in
+  the lyric is a drop target, so you can put three chords over "Amazing" —
+  one for each stressed vowel — or drop a chord in the gap between two words.
+- **Drag-and-drop chords** from a palette of diatonic chords in the current key.
+- **Build custom chords** — root note, quality (m, 7, maj7, sus4, dim…), and
+  slash bass note. Drag the result onto a letter, or click a letter and
+  press "Add".
+- **Piano keyboard** for choosing key. The palette updates to the diatonic
+  chords of that key automatically.
+- **Transpose** the entire song up or down one semitone at a time.
+  Chord symbols *and* the selected key move together.
+- **ChordPro import and export** — compatible with most other chord editors.
+  Imported intros (leading chord-only lines) are shown as a separate block in
+  the song header, so they don't clutter the lyrics.
+- **Chord positions follow your edits.** When you add or remove text, the
+  chords stay above the correct letters. Insert a new line and everything
+  below moves down; the chords come along.
+- **Save and load** songs as `.chordic.json` files.
+  - In Chromium-based browsers (Chrome, Edge, Vivaldi, Brave, Opera, Deepin
+    Browser…) you can pick a folder once and get a proper library — songs
+    save and load directly from disk. This usually works even when opening
+    the file directly from disk.
+  - In Firefox and Safari, Chordic Lite falls back to downloading and
+    uploading individual files.
+- **Print to PDF** — the UI hides itself in the print stylesheet.
+- **Autosaves** your current song to `localStorage`, so nothing is lost on
+  a refresh.
 
-**Lokalt:** ladda ner `index.html` (eller `chordic-lite.html`) och öppna
-den genom att dubbelklicka på filen. I Chromium-baserade webbläsare
-fungerar mappbiblioteket direkt även då. I Firefox och Safari behöver du
-starta en enkel lokal server om du vill använda mappbiblioteket:
+---
+
+## Getting started
+
+**Quickest:** open the [live demo](https://zebaztian2525.github.io/chordic-lite/)
+in any modern browser.
+
+**Local:** download `index.html` and open it by double-clicking. In
+Chromium-based browsers the folder library works right away. In Firefox and
+Safari you need to start a small local server if you want the folder library:
 
 ```bash
 python3 -m http.server 8000
-# öppna sedan http://localhost:8000/index.html
-```
+# then open http://localhost:8000/index.html
 
-Nedladdning och filuppladdning fungerar i alla webbläsare oavsett hur
-sidan öppnas.
+Downloading and uploading files works in every browser, no matter how the
+page is opened.
 
----
+How to use
+Action	How
+Select a letter	Click it
+Add a chord	Drag a chip onto a letter, or select a letter and click a chord
+Add a custom chord	Build it in the builder panel, then drag or press "Add"
+Move a chord	Drag it to a new letter
+Remove a chord	Ctrl-click (⌘-click on macOS) it
+Change key	Click a piano key
+Transpose	Use −½ / +½
+Edit lyrics	Type in the text area on the right
+Import ChordPro	Click "📥 ChordPro"
+Export ChordPro	Click "📤 ChordPro"
+Print / PDF	Click "🖨️ PDF"
+Save file	Use the library panel or "⬇ Download"
+Switch to Swedish	Click "🇸🇪 SV" in the top right
+Roadmap / ideas
+□ Undo / redo
+□ Verse / chorus / bridge markers with repeat
+□ Multiple chord rows per line (two-voice arrangements)
+□ Custom chord palette per song
+□ Keyboard navigation (arrow keys to move selection, Tab between chords)
+If you'd like to help with any of these, open an issue or a PR.
 
-## Så använder du programmet
+Browser support
+Feature	Chromium*	Firefox	Safari
+Core editing	✅	✅	✅
+Folder library via file://	✅	—	—
+Folder library via HTTPS / localhost	✅	—	—
+Download / upload files	✅	✅	✅
+Print to PDF	✅	✅	✅
+* Chromium covers Chrome, Edge, Vivaldi, Brave, Opera, Deepin Browser, and
+other browsers built on the same engine.
 
-| Åtgärd | Hur |
-|---|---|
-| Markera en bokstav | Klicka på den |
-| Lägg till ett ackord | Dra en chip till en bokstav, eller markera en bokstav och klicka på ett ackord |
-| Lägg till ett eget ackord | Bygg det i byggarpanelen, dra eller tryck "Lägg till" |
-| Flytta ett ackord | Dra det till en ny bokstav |
-| Ta bort ett ackord | `Ctrl`-klicka (`⌘`-klicka på macOS) |
-| Byt tonart | Klicka på en pianotangent |
-| Transponera | Använd `−½` / `+½` |
-| Redigera texten | Klicka "✏️ Text" |
-| Skriv ut / PDF | Klicka "🖨️ PDF" |
-| Spara fil | Använd bibliotekspanelen eller "⬇ Ladda ner" |
+Tech
+Single HTML file. No build step, no dependencies, no framework.
+Plain HTML, CSS, and vanilla JavaScript.
 
----
+The chord/character model is intentionally simple:
 
-## Idéer för framtiden
-
-- [ ] Ångra / gör om
-- [ ] Vers- / refräng- / brygga-markeringar med upprepning
-- [ ] Import och export av ChordPro-format
-- [ ] Flera ackordrader per textrad (tvåstämmigt)
-- [ ] Anpassad ackordpalett per låt
-- [ ] Tangentbordsnavigering (piltangenter för markering, Tab mellan ackord)
-
-Vill du hjälpa till med något av detta? Öppna en issue eller en PR.
-
----
-
-## Webbläsarstöd
-
-| Funktion | Chromium* | Firefox | Safari |
-|---|---|---|---|
-| Grundläggande redigering | ✅ | ✅ | ✅ |
-| Mappbibliotek via `file://` | ✅ | — | — |
-| Mappbibliotek via HTTPS / localhost | ✅ | — | — |
-| Ladda ner / ladda upp filer | ✅ | ✅ | ✅ |
-| Skriv ut till PDF | ✅ | ✅ | ✅ |
-
-\* Chromium omfattar Chrome, Edge, Vivaldi, Brave, Opera, Deepin Browser
-och andra webbläsare som bygger på samma motor.
-
----
-
-## Teknik
-
-En enda HTML-fil. Inget byggsteg, inga beroenden, inget ramverk.
-Ren HTML, CSS och vanlig JavaScript.
-
-Modellen för ackord och tecken är medvetet enkel:
-
-```js
+js
 state = {
-  title:  "Min låt",
+  title:  "My song",
+  artist: "Bob Dylan",
+  intro:  ["F", "Am", "Dm", "C", "F"],
   lyrics: "Amazing grace how sweet the sound\n…",
   chords: [ { line: 0, char: 4, chord: "G" }, … ],
   key:    "C"
 }
-```
+chords is a flat list of { line, char, chord } — one chord per position.
+The char index counts characters within a line, including spaces, so a
+chord placed "between two words" simply has the index of the space character.
+intro holds the leading chord sequence (e.g. a riff or count-in) shown in
+the song header rather than in the lyrics.
 
-`chords` är en platt lista av `{ line, char, chord }` — ett ackord per
-position. `char` räknar tecken inom raden, inklusive mellanslag, så ett
-ackord som placerats "mellan två ord" har helt enkelt mellanslagets
-index.
+When you edit the lyrics, applyLyrics() runs a prefix/suffix diff between
+the old and new text and re-maps every chord position. Chords before the edit
+stay put, chords after the edit shift by the length of the change, and chords
+inside the changed region are dropped.
 
----
+License
+MIT — see LICENSE.
 
-## Licens
-
-MIT — se [LICENSE](LICENSE).
-
----
-
-## Om projektet
-
+<details> <summary><strong>🇸🇪 Om projektet (svenska)</strong></summary>
 Chordic Lite är ett litet, webbläsarbaserat ackordprogram för låtskrivare
-och kyrkomusiker. Du skriver in låttexten och placerar ackord ovanför
-exakt den bokstav där ackordet ska byta — även flera ackord över samma
-ord, och i mellanrummen mellan ord.
+och kyrkomusiker. Du skriver in låttexten och placerar ackord ovanför exakt
+den bokstav där ackordet ska byta — även flera ackord över samma ord, och i
+mellanrummen mellan ord.
 
-**Testa live:** https://zebaztian2525.github.io/chordic-lite/
+Testa live (engelska): https://zebaztian2525.github.io/chordic-lite/
+Svensk version: https://zebaztian2525.github.io/chordic-lite/index-sv.html
 
-Allt körs lokalt i webbläsaren. Ingen server, inget konto, ingen
-installation. Filen är en enda HTML-fil och kan öppnas direkt från disk.
+Allt körs lokalt i webbläsaren. Ingen server, inget konto, ingen installation.
+Filen är en enda HTML-fil och kan öppnas direkt från disk.
 
 Feedback och bidrag är varmt välkomna!
+
+Om du vill läsa README på svenska kan du använda webbläsarens
+översättningsfunktion — högerklicka på sidan och välj "Översätt till svenska".
+
+</details> ```
