@@ -54,7 +54,7 @@
     .lang-switch a:hover { background: #a8d5dd; }
     .lang-switch .active { background: #1a5f6e; color: #fff; }
 
-    .layout {
+       .layout {
         display: grid;
         grid-template-columns: 340px minmax(0, 1fr) 500px;
         gap: 12px;
@@ -63,8 +63,52 @@
     @media (min-width: 1600px) {
         .layout { grid-template-columns: 340px minmax(0, 1fr) 620px; }
     }
-    @media (max-width: 1300px) {
-        .layout { grid-template-columns: 1fr; }
+    /* Liggande platta: två kolumner, editor och bibliotek under */
+    @media (min-width: 701px) and (max-width: 1300px) {
+        .layout {
+            grid-template-columns: 300px minmax(0, 1fr);
+            grid-template-areas:
+                "sidebar main"
+                "right   right";
+        }
+        .sidebar {
+            grid-area: sidebar;
+            position: static;
+            max-height: none;
+            overflow-y: visible;
+            align-self: stretch;
+        }
+        .main { grid-area: main; }
+        .right-column {
+            grid-area: right;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            position: static;
+            max-height: none;
+            overflow-y: visible;
+        }
+        .panel-palette {
+            position: sticky;
+            top: 14px;
+            z-index: 5;
+        }
+    }
+    /* Stående platta och telefon: en kolumn, sticky palett */
+    @media (max-width: 700px) {
+        .layout {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .sidebar, .main, .right-column { display: contents; }
+        .panel-key     { order: 1; }
+        .panel-palette { order: 2; position: sticky; top: 14px; z-index: 10; }
+        .info-bar      { order: 3; }
+        .song          { order: 4; }
+        .editor-panel  { order: 5; }
+        .panel-library { order: 6; }
+        .panel-builder { order: 7; }
     }
 
     .sidebar {
