@@ -63,6 +63,9 @@
     @media (min-width: 1600px) {
         .layout { grid-template-columns: 340px minmax(0, 1fr) 620px; }
     }
+        /* Wrappern är osynlig på desktop */
+    .sticky-panels { display: contents; }
+
     /* Liggande platta: två kolumner, editor och bibliotek under */
     @media (min-width: 701px) and (max-width: 1300px) {
         .layout {
@@ -88,10 +91,17 @@
             max-height: none;
             overflow-y: visible;
         }
-        .panel-palette {
+        .sticky-panels {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
             position: sticky;
             top: 14px;
             z-index: 5;
+            background: #0d3f4c;
+            padding: 8px;
+            border-radius: 18px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
         }
     }
     /* Stående platta och telefon: en kolumn, sticky palett */
