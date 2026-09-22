@@ -989,9 +989,12 @@
             if (lastTarget) lastTarget.classList.remove('dragover');
             if (dragging) {
                 swallowNextClick();
-                if (lastTarget) {
-                    const line = parseInt(lastTarget.dataset.line, 10);
-                    const char = parseInt(lastTarget.dataset.char, 10);
+                // Räkna om målet från den faktiska uppsläpp-positionen,
+                // eftersom sista pointermove kan ha varit något fel.
+                const finalTarget = findCharAt(ev.clientX, ev.clientY);
+                if (finalTarget) {
+                    const line = parseInt(finalTarget.dataset.line, 10);
+                    const char = parseInt(finalTarget.dataset.char, 10);
                     onDrop(line, char);
                 }
             }
