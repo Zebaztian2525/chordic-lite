@@ -1285,6 +1285,7 @@
         state.chords = state.chords.filter(c =>
             !(c.line === line && c.char === char));
         state.chords.push({ line, char, chord: chordText });
+        state.selectedChar = null;
         renderSong(); save();
     }
     function moveChord(fromLine, fromChar, toLine, toChar, chordText) {
