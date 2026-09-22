@@ -2,7 +2,7 @@
 
 **[▶ Try it live in your browser](https://zebaztian2525.github.io/chordic-lite/)** — no installation required.
 
-**Current version:** [1.0](https://github.com/zebaztian2525/chordic-lite/releases/tag/v1.0)
+**Current version:** [1.1](https://github.com/zebaztian2525/chordic-lite/releases/tag/v1.1)
 
 **🌍 Languages:** English (default) · [Svenska](https://zebaztian2525.github.io/chordic-lite/index-sv.html)
 
