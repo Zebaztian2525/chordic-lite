@@ -41,6 +41,16 @@
     }
     .toolbar button:hover { background: #a8d5dd; transform: translateY(-1px); }
     .toolbar button:active { transform: translateY(0); }
+    .toolbar button.icon-btn {
+        padding: 8px 12px;
+        font-size: 1.05rem;
+        line-height: 1;
+        min-width: 36px;
+    }
+    .toolbar button:disabled {
+        opacity: 0.35;
+        pointer-events: none;
+    }
 
     .lang-switch {
         display: flex; gap: 4px; align-items: center;
@@ -54,7 +64,7 @@
     .lang-switch a:hover { background: #a8d5dd; }
     .lang-switch .active { background: #1a5f6e; color: #fff; }
 
-       .layout {
+    .layout {
         display: grid;
         grid-template-columns: 340px minmax(0, 1fr) 500px;
         gap: 12px;
@@ -63,7 +73,7 @@
     @media (min-width: 1600px) {
         .layout { grid-template-columns: 340px minmax(0, 1fr) 620px; }
     }
-           /* Wrappern görs genomskinlig – den behövs inte längre */
+
     .sticky-panels { display: contents; }
 
     /* Liggande platta: två kolumner, hela sidopanelen följer med */
@@ -126,11 +136,54 @@
         .panel-palette { order: 2; }
         .panel-builder { order: 3; }
     }
-    @media (min-width: 1301px) {
-        .sidebar {
-            position: sticky; top: 14px;
-            max-height: calc(100vh - 28px);
-            overflow-y: auto; padding-right: 2px;
+
+    /* Sidopanelens fäll-knapp (endast små skärmar) */
+    .sidebar-toggle {
+        position: absolute;
+        top: 10px; right: 10px;
+        z-index: 20;
+        width: 28px; height: 28px;
+        border-radius: 50%;
+        border: none;
+        background: #d3e9ed;
+        color: #0d3f4c;
+        font-weight: bold;
+        font-size: 0.85rem;
+        line-height: 1;
+        cursor: default;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+        padding: 0;
+        font-family: inherit;
+    }
+    .sidebar-toggle:hover { background: #a8d5dd; }
+    .sidebar-toggle:active { transform: scale(0.95); }
+
+    @media (max-width: 1300px) {
+        .sidebar-toggle { display: flex; }
+        .sidebar.collapsed .panel { display: none; }
+        .sidebar.collapsed {
+            min-height: 56px !important;
+            max-height: 56px !important;
+            height: 56px !important;
+            overflow: hidden !important;
+            padding: 8px !important;
+        }
+        .sidebar.collapsed .sidebar-toggle {
+            top: 12px;
+            right: 50%;
+            transform: translateX(50%);
+            width: 32px;
+            height: 32px;
+            font-size: 1rem;
+        }
+    }
+
+    @media (min-width: 701px) and (max-width: 1300px) {
+        .layout.sidebar-collapsed {
+            grid-template-columns: 60px minmax(0, 1fr);
         }
     }
 
@@ -138,11 +191,20 @@
         display: flex; flex-direction: column; gap: 12px;
     }
     @media (min-width: 1301px) {
+        .sidebar {
+            position: sticky; top: 14px;
+            max-height: calc(100vh - 28px);
+            overflow-y: auto; padding-right: 2px;
+        }
         .right-column {
             position: sticky; top: 14px;
             max-height: calc(100vh - 28px);
             overflow-y: auto; padding-right: 2px;
         }
+    }
+
+    .sidebar {
+        display: flex; flex-direction: column; gap: 12px;
     }
 
     .main {
@@ -348,13 +410,36 @@
     .char .chord::before {
         content: '';
         position: absolute;
-        top: -16px;      /* generöst uppåt – inget där */
-        bottom: -10px;   /* måttligt nedåt – lämnar plats för bokstaven */
-        left: -14px;     /* max innan introradens ackord börjar krocka */
+        top: -16px;
+        bottom: -10px;
+        left: -14px;
         right: -14px;
     }
     .char .chord:hover { background: #c4e8ee; }
     .char .chord.dragging { opacity: 0.35; cursor: default; }
+
+    /* ×-knapp som visas på touch-enheter */
+    .char .chord .delete-x {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        width: 20px;
+        height: 20px;
+        background: #d32f2f;
+        color: #fff;
+        border-radius: 50%;
+        font-size: 13px;
+        line-height: 20px;
+        text-align: center;
+        font-weight: bold;
+        cursor: default;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.35);
+        z-index: 10;
+        font-family: 'Segoe UI', Tahoma, sans-serif;
+        user-select: none;
+        touch-action: none;
+    }
+    .char .chord .delete-x:hover { background: #b71c1c; }
 
     .char .lyric.spacer {
         visibility: hidden;
@@ -432,7 +517,7 @@
     @media print {
         body { background: #fff; padding: 0; }
         .topbar, .sidebar, .right-column, .info-bar,
-        .confirm-overlay, .toast { display: none !important; }
+        .confirm-overlay, .toast, .sidebar-toggle { display: none !important; }
         .layout { display: block; }
         .main { display: block; }
         .song {
@@ -442,6 +527,7 @@
         }
         .song-header { border-bottom: none; margin-bottom: 20px; }
         .char .chord { color: #000; }
+        .char .chord .delete-x { display: none !important; }
         .char.selected .lyric { background: transparent; outline: none; }
     }
 </style>
@@ -455,6 +541,8 @@
     <input type="text" class="song-input title-input" id="songTitle"
            placeholder="Låtens namn..." autocomplete="off" spellcheck="false">
     <div class="toolbar">
+        <button class="icon-btn" id="undoBtn" disabled title="Ångra (Ctrl+Z)">↶</button>
+        <button class="icon-btn" id="redoBtn" disabled title="Gör om (Ctrl+Y)">↷</button>
         <button id="transDownBtn" title="Transponera ner ett halvt steg">−½</button>
         <button id="transUpBtn" title="Transponera upp ett halvt steg">+½</button>
         <button id="exportChordProBtn" title="Exportera som ChordPro">📤 ChordPro</button>
@@ -468,9 +556,11 @@
     </div>
 </div>
 
-<div class="layout">
+<div class="layout" id="layout">
 
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
+
+        <button class="sidebar-toggle" id="sidebarToggle" title="Fäll ihop / visa panel">◀</button>
 
         <div class="panel panel-key">
             <div class="key-panel">
@@ -510,9 +600,7 @@
 
     <main class="main">
         <div class="info-bar">
-            🖱️ Dra ackord från palett/byggare till en bokstav &nbsp;|&nbsp;
-            ↔ Dra ett fastsatt ackord för att flytta &nbsp;|&nbsp;
-            <kbd>Ctrl</kbd> + klicka på ett ackord för att ta bort
+            🖱️ Dra ackord från palett/byggare till en bokstav  &nbsp;|&nbsp;  ↔ Dra ett fastsatt ackord för att flytta  &nbsp;|&nbsp;  <kbd>Ctrl</kbd> + klicka på ett ackord för att ta bort
         </div>
         <div class="song" id="song">
             <div class="song-header empty" id="songHeader"></div>
@@ -570,6 +658,7 @@
     'use strict';
 
     const STORAGE_KEY = 'chordic_lite_sv_v5';
+    const SIDEBAR_KEY = 'chordic_lite_sidebar_collapsed';
     const NOTES_SHARP = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
     const MAJOR_INTERVALS = [0, 2, 4, 5, 7, 9, 11];
     const CHORD_QUALITIES = ['', 'm', 'm', '', '', 'm', 'dim'];
@@ -595,6 +684,7 @@
         { label: '13',   value: '13' }
     ];
     const DRAG_THRESHOLD = 5;
+    const IS_TOUCH = window.matchMedia('(pointer: coarse)').matches;
 
     const DEFAULT_LYRICS =
         "Amazing grace how sweet the sound\n" +
@@ -615,6 +705,12 @@
     let builder = { root: 'C', quality: '', bass: null };
     let libraryDirHandle = null;
     let currentLibraryFile = null;
+
+    const layoutEl = document.getElementById('layout');
+    const sidebarEl = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const undoBtn = document.getElementById('undoBtn');
+    const redoBtn = document.getElementById('redoBtn');
 
     const songHeaderEl = document.getElementById('songHeader');
     const songEl = document.getElementById('songBody');
@@ -663,6 +759,138 @@
         if (confirmResolve) confirmResolve(false);
     });
 
+    // === Undo / redo ===
+    const history = { past: [], future: [], max: 50 };
+    let isRestoring = false;
+
+    function snapshotState() {
+        return JSON.stringify({
+            chords: state.chords,
+            lyrics: state.lyrics,
+            intro: state.intro,
+            key: state.key,
+            title: state.title,
+            artist: state.artist
+        });
+    }
+
+    function pushHistory() {
+        if (isRestoring) return;
+        history.past.push(snapshotState());
+        if (history.past.length > history.max) history.past.shift();
+        history.future.length = 0;
+        updateUndoButtons();
+    }
+
+    function applySnapshot(json) {
+        const data = JSON.parse(json);
+        state.chords = data.chords;
+        state.lyrics = data.lyrics;
+        state.intro = data.intro;
+        state.key = data.key;
+        state.title = data.title;
+        state.artist = data.artist;
+        state.selectedChar = null;
+        songTitleInput.value = state.title;
+        songArtistInput.value = state.artist;
+        lyricsText.value = state.lyrics;
+        hideDeleteButton();
+        renderSong();
+        renderPalette();
+        renderKeyboard();
+        save();
+    }
+
+    function undo() {
+        if (history.past.length === 0) return;
+        isRestoring = true;
+        history.future.push(snapshotState());
+        const prev = history.past.pop();
+        applySnapshot(prev);
+        isRestoring = false;
+        updateUndoButtons();
+    }
+
+    function redo() {
+        if (history.future.length === 0) return;
+        isRestoring = true;
+        history.past.push(snapshotState());
+        const next = history.future.pop();
+        applySnapshot(next);
+        isRestoring = false;
+        updateUndoButtons();
+    }
+
+    function updateUndoButtons() {
+        undoBtn.disabled = history.past.length === 0;
+        redoBtn.disabled = history.future.length === 0;
+    }
+
+    // === Delete-x (touch) ===
+    let activeDeleteChord = null;
+    let deleteTimer = null;
+
+    function hideDeleteButton() {
+        if (activeDeleteChord) {
+            const prevX = activeDeleteChord.querySelector('.delete-x');
+            if (prevX) prevX.remove();
+            activeDeleteChord.classList.remove('show-delete');
+            activeDeleteChord = null;
+        }
+        if (deleteTimer) {
+            clearTimeout(deleteTimer);
+            deleteTimer = null;
+        }
+    }
+
+    function showDeleteButton(chordEl, line, char) {
+        hideDeleteButton();
+
+        const xBtn = document.createElement('span');
+        xBtn.className = 'delete-x';
+        xBtn.textContent = '×';
+        xBtn.title = 'Ta bort';
+        xBtn.addEventListener('pointerdown', ev => ev.stopPropagation());
+        xBtn.addEventListener('click', ev => {
+            ev.stopPropagation();
+            pushHistory();
+            removeChord(line, char);
+            hideDeleteButton();
+        });
+        chordEl.appendChild(xBtn);
+        activeDeleteChord = chordEl;
+
+        deleteTimer = setTimeout(hideDeleteButton, 4000);
+    }
+
+    document.addEventListener('pointerdown', e => {
+        if (activeDeleteChord &&
+            !e.target.closest('.delete-x') &&
+            !e.target.closest('.chord')) {
+            hideDeleteButton();
+        }
+    }, true);
+
+    // === Sidebar toggle ===
+    function applySidebarState(collapsed) {
+        sidebarEl.classList.toggle('collapsed', collapsed);
+        layoutEl.classList.toggle('sidebar-collapsed', collapsed);
+        sidebarToggle.textContent = collapsed ? '▶' : '◀';
+    }
+
+    sidebarToggle.addEventListener('click', () => {
+        const nowCollapsed = !sidebarEl.classList.contains('collapsed');
+        applySidebarState(nowCollapsed);
+        try { localStorage.setItem(SIDEBAR_KEY, nowCollapsed ? '1' : '0'); } catch (e) {}
+    });
+
+    try {
+        if (localStorage.getItem(SIDEBAR_KEY) === '1') {
+            applySidebarState(true);
+        }
+    } catch (e) {}
+
+    // === Hjälpfunktioner ===
     function normalizeRoot(root) {
         return root.replace(/Db/g,'C#').replace(/Eb/g,'D#')
                    .replace(/Gb/g,'F#').replace(/Ab/g,'G#')
@@ -800,6 +1028,8 @@
         });
     }
     function setKey(newKey) {
+        if (newKey === state.key) return;
+        pushHistory();
         state.key = newKey;
         renderPalette(); renderKeyboard(); save();
     }
@@ -898,6 +1128,7 @@
     }
 
     function renderLyrics() {
+        hideDeleteButton();
         songEl.innerHTML = '';
         const lines = state.lyrics.split('\n');
         lines.forEach((lineText, lineIdx) => {
@@ -942,7 +1173,7 @@
                         const chordEl = document.createElement('span');
                         chordEl.className = 'chord';
                         chordEl.textContent = chord.chord;
-                        chordEl.title = 'Dra för att flytta, Ctrl+klick för att ta bort';
+                        chordEl.title = 'Dra för att flytta, Ctrl+klicka för att ta bort';
                         chordEl.addEventListener('pointerdown', e => {
                             e.stopPropagation();
                             startDrag(e, chordEl, () => chord.chord, (newLine, newChar) => {
@@ -951,8 +1182,14 @@
                         });
                         chordEl.addEventListener('click', e => {
                             e.stopPropagation();
-                            if (e.ctrlKey || e.metaKey) removeChord(lineIdx, idx);
-                            else selectChar(lineIdx, idx);
+                            if (e.ctrlKey || e.metaKey) {
+                                pushHistory();
+                                removeChord(lineIdx, idx);
+                            } else if (IS_TOUCH) {
+                                showDeleteButton(chordEl, lineIdx, idx);
+                            } else {
+                                selectChar(lineIdx, idx);
+                            }
                         });
                         charEl.appendChild(chordEl);
                     }
@@ -985,7 +1222,7 @@
                 const chordEl = document.createElement('span');
                 chordEl.className = 'chord';
                 chordEl.textContent = chord.chord;
-                chordEl.title = 'Dra för att flytta, Ctrl+klick för att ta bort';
+                chordEl.title = 'Dra för att flytta, Ctrl+klicka för att ta bort';
                 chordEl.addEventListener('pointerdown', e => {
                     e.stopPropagation();
                     startDrag(e, chordEl, () => chord.chord, (newLine, newChar) => {
@@ -994,8 +1231,14 @@
                 });
                 chordEl.addEventListener('click', e => {
                     e.stopPropagation();
-                    if (e.ctrlKey || e.metaKey) removeChord(lineIdx, chord.char);
-                    else selectChar(lineIdx, chord.char);
+                    if (e.ctrlKey || e.metaKey) {
+                        pushHistory();
+                        removeChord(lineIdx, chord.char);
+                    } else if (IS_TOUCH) {
+                        showDeleteButton(chordEl, lineIdx, chord.char);
+                    } else {
+                        selectChar(lineIdx, chord.char);
+                    }
                 });
                 charEl.appendChild(chordEl);
 
@@ -1014,6 +1257,10 @@
         renderSong();
     }
     function addChord(line, char, chordText) {
+        const existing = state.chords.find(c =>
+            c.line === line && c.char === char);
+        if (existing && existing.chord === chordText) return;
+        pushHistory();
         state.chords = state.chords.filter(c =>
             !(c.line === line && c.char === char));
         state.chords.push({ line, char, chord: chordText });
@@ -1021,6 +1268,7 @@
     }
     function moveChord(fromLine, fromChar, toLine, toChar, chordText) {
         if (fromLine === toLine && fromChar === toChar) return;
+        pushHistory();
         state.chords = state.chords.filter(c =>
             !(c.line === fromLine && c.char === fromChar) &&
             !(c.line === toLine && c.char === toChar));
@@ -1034,6 +1282,7 @@
     }
 
     function transposeAll(semitones) {
+        pushHistory();
         state.chords = state.chords.map(c =>
             ({ ...c, chord: transposeChord(c.chord, semitones) }));
         state.intro = state.intro.map(c => transposeChord(c, semitones));
@@ -1097,6 +1346,7 @@
             newChords.push({ line, char, chord: c.chord });
         }
 
+        pushHistory();
         state.lyrics = newText;
         state.chords = newChords;
         state.selectedChar = null;
@@ -1109,7 +1359,7 @@
 
     function save() {
         try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-        catch (e) { console.warn('Kunde inte spara:', e); }
+        catch (e) { console.warn('Could not save:', e); }
     }
     function load() {
         try {
@@ -1126,7 +1376,7 @@
                 state.selectedChar = null;
                 return true;
             }
-        } catch (e) { console.warn('Kunde inte läsa:', e); }
+        } catch (e) { console.warn('Could not read:', e); }
         return false;
     }
 
@@ -1402,6 +1652,7 @@
             }
         }
 
+        pushHistory();
         if (title)  state.title = title;
         if (artist) state.artist = artist;
         if (key && NOTES_SHARP.indexOf(normalizeRoot(key)) !== -1) state.key = key;
@@ -1469,6 +1720,7 @@
             showToast('Filen är inte en Chordic-låt');
             return;
         }
+        pushHistory();
         state.title = data.title || 'Min låt';
         state.artist = data.artist || '';
         state.intro = Array.isArray(data.intro) ? data.intro : [];
@@ -1483,12 +1735,30 @@
     }
 
     document.addEventListener('keydown', e => {
+        const inField = document.activeElement &&
+            (document.activeElement.tagName === 'INPUT' ||
+             document.activeElement.tagName === 'TEXTAREA');
+
         if (e.key === 'Escape') {
             state.selectedChar = null;
             renderSong();
+            return;
+        }
+
+        const k = (e.key || '').toLowerCase();
+        if (inField) return;
+
+        if ((e.ctrlKey || e.metaKey) && k === 'z' && !e.shiftKey) {
+            e.preventDefault();
+            undo();
+        } else if ((e.ctrlKey || e.metaKey) && (k === 'y' || (k === 'z' && e.shiftKey))) {
+            e.preventDefault();
+            redo();
         }
     });
 
+    document.getElementById('undoBtn').addEventListener('click', undo);
+    document.getElementById('redoBtn').addEventListener('click', redo);
     document.getElementById('transDownBtn').addEventListener('click', () => transposeAll(-1));
     document.getElementById('transUpBtn').addEventListener('click', () => transposeAll(1));
     document.getElementById('exportChordProBtn').addEventListener('click', downloadChordPro);
@@ -1497,6 +1767,7 @@
     document.getElementById('clearChordsBtn').addEventListener('click', async () => {
         const ok = await showConfirm('Rensa alla ackord?');
         if (!ok) return;
+        pushHistory();
         state.chords = []; renderSong(); save();
     });
     document.getElementById('pickLibraryBtn').addEventListener('click', pickLibrary);
@@ -1527,14 +1798,12 @@
     renderKeyboard();
     renderBuilder();
     renderSong();
+    updateUndoButtons();
 
     if (!fsSupported()) {
-        libraryNoteEl.textContent =
-            'Din webbläsare stödjer inte mappval. Använd "Öppna fil" och "Ladda ner" istället.';
+        libraryNoteEl.textContent = 'Din webbläsare stödjer inte mappval. Använd "Öppna fil" och "Ladda ner" istället.';
     } else {
-        libraryNoteEl.textContent =
-            'Mappval fungerar i Chromium-baserade webbläsare. ' +
-            'I Firefox och Safari används nedladdning och filuppladdning istället.';
+        libraryNoteEl.textContent = 'Mappval fungerar i Chromium-baserade webbläsare. I Firefox och Safari används nedladdning och filuppladdning istället.';
     }
 })();
 </script>
