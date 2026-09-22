@@ -933,9 +933,25 @@
         ghost.style.left = x + 'px';
         ghost.style.top = y + 'px';
     }
-    function findCharAt(x, y) {
+        function findCharAt(x, y) {
+        // Direktträff först
         const el = document.elementFromPoint(x, y);
-        return el && el.closest ? el.closest('.char') : null;
+        const direct = el && el.closest ? el.closest('.char') : null;
+        if (direct) return direct;
+
+        // Annars: snappa till närmaste bokstav inom en liten radie.
+        // Hjälper när man siktar på kanten av en bokstav — särskilt
+        // radens första bokstav, där marginalen lurar pekaren.
+        const SNAP_RADIUS = 28;
+        let best = null, bestDist = Infinity;
+        document.querySelectorAll('.char').forEach(c => {
+            const r = c.getBoundingClientRect();
+            const dx = Math.max(r.left - x, 0, x - r.right);
+            const dy = Math.max(r.top - y, 0, y - r.bottom);
+            const d = Math.hypot(dx, dy);
+            if (d < bestDist) { bestDist = d; best = c; }
+        });
+        return bestDist <= SNAP_RADIUS ? best : null;
     }
     function swallowNextClick() {
         document.addEventListener('click', e => {
