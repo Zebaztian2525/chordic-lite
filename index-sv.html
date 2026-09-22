@@ -1292,6 +1292,7 @@
             !(c.line === fromLine && c.char === fromChar) &&
             !(c.line === toLine && c.char === toChar));
         state.chords.push({ line: toLine, char: toChar, chord: chordText });
+        state.selectedChar = null;
         renderSong(); save();
     }
     function removeChord(line, char) {
