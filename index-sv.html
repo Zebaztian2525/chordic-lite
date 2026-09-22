@@ -979,7 +979,7 @@
             if (target) { target.classList.add('dragover'); lastTarget = target; }
             else lastTarget = null;
         }
-        function onUp() {
+            function onUp(ev) {
             try { sourceEl.releasePointerCapture(e.pointerId); } catch (err) {}
             sourceEl.removeEventListener('pointermove', onMove);
             sourceEl.removeEventListener('pointerup', onUp);
